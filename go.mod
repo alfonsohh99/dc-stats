@@ -4,6 +4,7 @@ go 1.17
 
 require (
 	github.com/bwmarrin/discordgo v0.25.0
+	github.com/procyon-projects/chrono v1.1.0
 	go.mongodb.org/mongo-driver v1.9.1
 )
 
