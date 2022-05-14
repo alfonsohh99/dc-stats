@@ -9,6 +9,7 @@ import (
 	"github.com/bwmarrin/discordgo"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
+	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 func MyStats(s *discordgo.Session, m *discordgo.MessageCreate, ctx context.Context) {
@@ -16,13 +17,17 @@ func MyStats(s *discordgo.Session, m *discordgo.MessageCreate, ctx context.Conte
 	var guildObject model.ProcessedGuild
 
 	filter := bson.D{primitive.E{Key: "guild_id", Value: m.GuildID}}
-	findGuild := database.ProcessedCollection.FindOne(ctx, filter)
-	if findGuild.Err() != nil {
+	optsChannelData := options.FindOne().SetProjection(bson.M{
+		"user_data." + m.Author.ID + ".score":       1,
+		"user_data." + m.Author.ID + ".channelData": bson.D{{Key: "$slice", Value: 10}},
+	})
+	findUserData := database.ProcessedCollection.FindOne(ctx, filter, optsChannelData)
+	if findUserData.Err() != nil {
 		_, _ = s.ChannelMessageSend(m.ChannelID, "No stats aviable for this guild")
 		return
 	}
 
-	findGuild.Decode(&guildObject)
+	findUserData.Decode(&guildObject)
 
 	if guildObject.UserData[m.Author.ID].ChannelData == nil || len(guildObject.UserData[m.Author.ID].ChannelData) == 0 {
 		_, _ = s.ChannelMessageSend(m.ChannelID, "No stats aviable for you :(")
@@ -30,12 +35,12 @@ func MyStats(s *discordgo.Session, m *discordgo.MessageCreate, ctx context.Conte
 	}
 
 	var stats string
-	stats += ":beginner: YOUR VOICE CHAT STATS :beginner:\n"
+	stats += ":beginner: YOUR TOP CHANNELS :beginner:\n\n"
 
 	for _, value := range guildObject.UserData[m.Author.ID].ChannelData {
 		stats += value.ChannelName + ": " + utils.FormatTime(value.Score) + "\n"
 	}
-	stats += "Total time: " + utils.FormatTime(guildObject.UserData[m.Author.ID].Score) + "s\n"
+	stats += "\nTotal time: " + utils.FormatTime(guildObject.UserData[m.Author.ID].Score) + "\n"
 
 	_, _ = s.ChannelMessageSend(m.ChannelID, stats)
 }

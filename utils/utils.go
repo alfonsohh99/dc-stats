@@ -13,7 +13,7 @@ func FormatTime(timeSeconds uint64) string {
 	var days uint64
 	var years uint64
 	if timeSeconds < 60 {
-		return strconv.FormatUint(timeSeconds, 10) + " seconds "
+		return strconv.FormatUint(timeSeconds, 10) + "s "
 	}
 	seconds = timeSeconds % 60
 	minutes = ((timeSeconds - seconds) / 60) % 60
@@ -22,23 +22,23 @@ func FormatTime(timeSeconds uint64) string {
 	years = (timeSeconds - seconds - minutes*60 - hours*3600 - days*86400) / 31536000
 
 	if years > 0 {
-		res += strconv.FormatUint(years, 10) + " years "
+		res += strconv.FormatUint(years, 10) + "y "
 	}
 
 	if days > 0 {
-		res += strconv.FormatUint(days, 10) + " days "
+		res += strconv.FormatUint(days, 10) + "d "
 	}
 
 	if hours > 0 {
-		res += strconv.FormatUint(hours, 10) + " hours "
+		res += strconv.FormatUint(hours, 10) + "h "
 	}
 
 	if minutes > 0 {
-		res += strconv.FormatUint(minutes, 10) + " minutes "
+		res += strconv.FormatUint(minutes, 10) + "m "
 	}
 
 	if seconds > 0 {
-		res += strconv.FormatUint(seconds, 10) + " seconds "
+		res += strconv.FormatUint(seconds, 10) + "s "
 	}
 
 	return res
