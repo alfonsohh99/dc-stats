@@ -36,7 +36,6 @@ func Start() {
 	BotId = u.ID
 
 	goBot.AddHandler(messageHandler)
-	goBot.Identify.Intents = discordgo.MakeIntent(discordgo.IntentsAll)
 
 	err = goBot.Open()
 
