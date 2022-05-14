@@ -3,6 +3,7 @@ package tasks
 import (
 	"context"
 	"log"
+	"sync"
 	"vc-stats/database"
 	"vc-stats/model"
 
@@ -11,7 +12,8 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
-func GatherStats(goBot *discordgo.Session, ctx context.Context) {
+func GatherStats(goBot *discordgo.Session, ctx context.Context, wait *sync.WaitGroup) {
+	defer wait.Done()
 
 	for _, guild := range goBot.State.Guilds {
 

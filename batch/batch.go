@@ -3,6 +3,7 @@ package batch
 import (
 	"context"
 	"log"
+	"sync"
 	"vc-stats/batch/tasks"
 	"vc-stats/constants"
 
@@ -20,7 +21,10 @@ func Start(goBot *discordgo.Session) {
 	taskScheduler := chrono.NewDefaultTaskScheduler()
 
 	task, err := taskScheduler.ScheduleWithFixedDelay(func(ctx context.Context) {
-		tasks.GatherStats(goBot, ctx)
+		var wg sync.WaitGroup
+		wg.Add(1)
+		go tasks.GatherStats(goBot, ctx, &wg)
+		wg.Wait()
 	}, constants.FetchDataInterval)
 	fetchDataTask = &task
 
@@ -29,7 +33,10 @@ func Start(goBot *discordgo.Session) {
 	}
 
 	task, err = taskScheduler.ScheduleWithFixedDelay(func(ctx context.Context) {
-		tasks.ProcessStats(goBot, ctx)
+		var wg sync.WaitGroup
+		wg.Add(1)
+		go tasks.ProcessStats(goBot, ctx, &wg)
+		wg.Wait()
 	}, constants.ProcessDataInterval)
 	processDataTask = &task
 
