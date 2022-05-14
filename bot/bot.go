@@ -69,17 +69,17 @@ func messageHandler(s *discordgo.Session, m *discordgo.MessageCreate) {
 	switch content {
 	case "ping":
 		{
-			messagehandlers.Ping(s, m)
+			go messagehandlers.Ping(s, m)
 			break
 		}
 	case "myStats":
 		{
-			messagehandlers.MyStats(s, m, ctx)
+			go messagehandlers.MyStats(s, m, ctx)
 			break
 		}
 	case "top":
 		{
-			messagehandlers.Top(s, m, ctx)
+			go messagehandlers.Top(s, m, ctx)
 			break
 		}
 
