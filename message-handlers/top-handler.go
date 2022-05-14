@@ -45,7 +45,6 @@ func Top(s *discordgo.Session, m *discordgo.MessageCreate, ctx context.Context) 
 		}
 		response += " - " + score.Username + ": " + utils.FormatTime(score.Score) + "\n"
 	}
-	response += "..."
 
 	_, _ = s.ChannelMessageSend(m.ChannelID, response)
 }

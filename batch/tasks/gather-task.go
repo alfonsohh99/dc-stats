@@ -48,7 +48,10 @@ func GatherStats(goBot *discordgo.Session, ctx context.Context, wait *sync.WaitG
 			}
 			lastId = members[len(members)-1].User.ID
 			for _, member := range members {
-
+				nickName := member.Nick
+				if nickName == "" {
+					nickName = member.User.Username
+				}
 				voiceState, err := goBot.State.VoiceState(guild.ID, member.User.ID)
 
 				if err == nil {
@@ -58,7 +61,7 @@ func GatherStats(goBot *discordgo.Session, ctx context.Context, wait *sync.WaitG
 						guildObject.Users[member.User.ID] = model.User{
 							ID:           primitive.NewObjectID(),
 							UserID:       member.User.ID,
-							UserName:     member.Nick,
+							UserName:     nickName,
 							UserActivity: map[string]uint64{voiceState.ChannelID: 10},
 						}
 						database.DataCollection.UpdateByID(ctx, guildObject.ID, bson.D{
@@ -69,7 +72,7 @@ func GatherStats(goBot *discordgo.Session, ctx context.Context, wait *sync.WaitG
 						currentValue += 10
 						database.DataCollection.UpdateByID(ctx, guildObject.ID, bson.D{
 							{"$set", bson.D{{"users." + member.User.ID + ".user_activity." + voiceState.ChannelID, currentValue}}},
-							{"$set", bson.D{{"users." + member.User.ID + ".user_name", member.Nick}}},
+							{"$set", bson.D{{"users." + member.User.ID + ".user_name", nickName}}},
 						})
 					}
 

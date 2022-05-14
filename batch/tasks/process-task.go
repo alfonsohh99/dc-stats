@@ -21,6 +21,7 @@ func ProcessStats(goBot *discordgo.Session, ctx context.Context, wait *sync.Wait
 		guildChannels, err := goBot.GuildChannels(guild.ID)
 		if err != nil {
 			// Error retrieving guild channels
+			log.Println("CANNOT ACCESS GUILD CHANNELS")
 			continue
 		}
 
@@ -29,6 +30,7 @@ func ProcessStats(goBot *discordgo.Session, ctx context.Context, wait *sync.Wait
 		filter := bson.D{primitive.E{Key: "guild_id", Value: guild.ID}}
 		findGuild := database.DataCollection.FindOne(ctx, filter)
 		if findGuild.Err() != nil {
+			log.Println("Cannot find guild to process")
 			//Guild doesnt have data yet
 			continue
 		}
@@ -98,8 +100,6 @@ func ProcessStats(goBot *discordgo.Session, ctx context.Context, wait *sync.Wait
 				{"$set", bson.D{{"user_data", userData}}},
 			})
 		}
-
-		return
 
 	}
 
