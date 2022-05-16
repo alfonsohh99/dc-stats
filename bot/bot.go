@@ -5,9 +5,7 @@ import (
 	"log"
 	"strings"
 	"time"
-	"vc-stats/batch"
 	"vc-stats/config"
-	"vc-stats/database"
 	"vc-stats/message-handlers"
 
 	"github.com/bwmarrin/discordgo"
@@ -15,12 +13,11 @@ import (
 
 var BotId string
 var goBot *discordgo.Session
-var ctx = context.TODO()
+var ctx context.Context
 
-func Start() {
+func Start(context context.Context) (bot *discordgo.Session) {
 
-	database.Init(ctx)
-
+	ctx = context
 	goBot, err := discordgo.New("Bot " + config.Token)
 
 	if err != nil {
@@ -44,8 +41,7 @@ func Start() {
 	}
 
 	log.Println("Bot is running !")
-
-	batch.Start(goBot)
+	return goBot
 
 }
 

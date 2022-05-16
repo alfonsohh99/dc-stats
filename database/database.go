@@ -13,10 +13,12 @@ var (
 	ProcessedCollection *mongo.Collection
 )
 
-func Init(ctx context.Context) {
+func Start(ctx context.Context) {
+
 	clientOptions := options.Client().ApplyURI("mongodb://" + config.DatabaseEndpoint + ":" + config.DatabasePort + "/").SetAuth(options.Credential{
 		Username: config.DatabaseUser,
 		Password: config.DatabasePassword})
+
 	client, err := mongo.Connect(ctx, clientOptions)
 	if err != nil {
 		log.Fatal(err)

@@ -18,12 +18,12 @@ var (
 )
 
 type configStruct struct {
-	Token            string `json : "Token"`
-	BotPrefix        string `json : "BotPrefix"`
-	DatabasePassword string `json : "DatabasePassword"`
-	DatabaseUser     string `json : "DatabaseUser"`
-	DatabaseEndpoint string `json : "DatabaseEndpoint"`
-	DatabasePort     string `json : "DatabasePort"`
+	Token            string `json:"Token"`
+	BotPrefix        string `json:"BotPrefix"`
+	DatabasePassword string `json:"DatabasePassword"`
+	DatabaseUser     string `json:"DatabaseUser"`
+	DatabaseEndpoint string `json:"DatabaseEndpoint"`
+	DatabasePort     string `json:"DatabasePort"`
 }
 
 func ReadConfig() error {

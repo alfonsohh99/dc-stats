@@ -17,20 +17,20 @@ func MyStats(s *discordgo.Session, m *discordgo.MessageCreate, ctx context.Conte
 	var guildObject model.ProcessedGuild
 
 	filter := bson.D{primitive.E{Key: "guild_id", Value: m.GuildID}}
-	optsChannelData := options.FindOne().SetProjection(bson.M{
+	optionsFindChannelData := options.FindOne().SetProjection(bson.M{
 		"user_data." + m.Author.ID + ".score":       1,
 		"user_data." + m.Author.ID + ".channelData": bson.D{{Key: "$slice", Value: 10}},
 	})
-	findUserData := database.ProcessedCollection.FindOne(ctx, filter, optsChannelData)
-	if findUserData.Err() != nil {
+	findChannelData := database.ProcessedCollection.FindOne(ctx, filter, optionsFindChannelData)
+	if findChannelData.Err() != nil {
 		_, _ = s.ChannelMessageSend(m.ChannelID, "No stats aviable for this guild")
 		return
 	}
 
-	findUserData.Decode(&guildObject)
+	findChannelData.Decode(&guildObject)
 
 	if guildObject.UserData[m.Author.ID].ChannelData == nil || len(guildObject.UserData[m.Author.ID].ChannelData) == 0 {
-		_, _ = s.ChannelMessageSend(m.ChannelID, "No stats aviable for you :(")
+		_, _ = s.ChannelMessageSend(m.ChannelID, "No stats aviable for you")
 		return
 	}
 

@@ -1,12 +1,18 @@
 package main
 
 import (
+	"context"
 	"fmt"
-	"vc-stats/bot"    //we will create this later
-	"vc-stats/config" //we will create this later
+	"vc-stats/batch"
+	"vc-stats/bot"
+	"vc-stats/config"
+	"vc-stats/database"
 )
 
+var ctx = context.TODO()
+
 func main() {
+
 	err := config.ReadConfig()
 
 	if err != nil {
@@ -14,7 +20,11 @@ func main() {
 		return
 	}
 
-	bot.Start()
+	database.Start(ctx)
+
+	bot := bot.Start(ctx)
+
+	batch.Start(bot)
 
 	<-make(chan struct{})
 	return

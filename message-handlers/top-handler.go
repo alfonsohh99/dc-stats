@@ -14,6 +14,7 @@ import (
 )
 
 func Top(s *discordgo.Session, m *discordgo.MessageCreate, ctx context.Context) {
+
 	var guildObject model.ProcessedGuild
 
 	filter := bson.D{primitive.E{Key: "guild_id", Value: m.GuildID}}
