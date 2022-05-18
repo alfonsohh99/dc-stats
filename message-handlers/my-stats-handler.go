@@ -18,8 +18,8 @@ func MyStats(s *discordgo.Session, m *discordgo.MessageCreate, ctx context.Conte
 
 	filter := bson.D{primitive.E{Key: "guild_id", Value: m.GuildID}}
 	optionsFindChannelData := options.FindOne().SetProjection(bson.M{
-		"user_data." + m.Author.ID + ".score":       1,
-		"user_data." + m.Author.ID + ".channelData": bson.D{{Key: "$slice", Value: 10}},
+		"user_data." + m.Author.ID + ".score":        1,
+		"user_data." + m.Author.ID + ".channel_data": bson.D{{Key: "$slice", Value: 10}},
 	})
 	findChannelData := database.ProcessedCollection.FindOne(ctx, filter, optionsFindChannelData)
 	if findChannelData.Err() != nil {
