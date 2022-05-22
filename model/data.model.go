@@ -10,11 +10,6 @@ type Guild struct {
 	Users   map[string]User    `bson:"users"`
 }
 
-type ChannelActivity struct {
-	Score       uint64 `bson:"score"`
-	ChannelName string `bson:"channel_name"`
-}
-
 type User struct {
 	ID           primitive.ObjectID `bson:"_id"`
 	UserID       string             `bson:"user_id"`

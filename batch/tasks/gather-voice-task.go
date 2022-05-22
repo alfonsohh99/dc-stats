@@ -12,7 +12,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
-func GatherStats(goBot *discordgo.Session, ctx context.Context, wait *sync.WaitGroup) {
+func GatherVoiceStats(goBot *discordgo.Session, ctx context.Context, wait *sync.WaitGroup) {
 	defer wait.Done()
 
 	for _, guild := range goBot.State.Guilds {

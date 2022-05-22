@@ -13,7 +13,7 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
-func Top(s *discordgo.Session, m *discordgo.MessageCreate, ctx context.Context) {
+func TopVoice(s *discordgo.Session, m *discordgo.MessageCreate, ctx context.Context) {
 
 	var guildObject model.ProcessedGuild
 

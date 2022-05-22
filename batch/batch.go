@@ -12,33 +12,39 @@ import (
 )
 
 var (
-	fetchDataTask   *chrono.ScheduledTask
-	processDataTask *chrono.ScheduledTask
+	fetchVoiceDataTask   *chrono.ScheduledTask
+	processVoiceDataTask *chrono.ScheduledTask
 )
 
 func Start(goBot *discordgo.Session) {
 
 	taskScheduler := chrono.NewDefaultTaskScheduler()
 
+	/**
+	 * 	GATHER VOICE STATS TASK
+	 */
 	task, err := taskScheduler.ScheduleWithFixedDelay(func(ctx context.Context) {
 		var wg sync.WaitGroup
 		wg.Add(1)
-		go tasks.GatherStats(goBot, ctx, &wg)
+		go tasks.GatherVoiceStats(goBot, ctx, &wg)
 		wg.Wait()
 	}, constants.FetchDataInterval)
-	fetchDataTask = &task
+	fetchVoiceDataTask = &task
 
 	if err == nil {
 		log.Print("FetchDataTask has been scheduled successfully.  Fixed delay: ", constants.FetchDataInterval)
 	}
 
+	/**
+	 * 	PROCESS VOICE STATS TASK
+	 */
 	task, err = taskScheduler.ScheduleWithFixedDelay(func(ctx context.Context) {
 		var wg sync.WaitGroup
 		wg.Add(1)
-		go tasks.ProcessStats(goBot, ctx, &wg)
+		go tasks.ProcessVoiceStats(goBot, ctx, &wg)
 		wg.Wait()
 	}, constants.ProcessDataInterval)
-	processDataTask = &task
+	processVoiceDataTask = &task
 
 	if err == nil {
 		log.Print("processDataTask has been scheduled successfully. Fixed delay: ", constants.ProcessDataInterval)

@@ -12,7 +12,7 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
-func MyStats(s *discordgo.Session, m *discordgo.MessageCreate, ctx context.Context) {
+func MyVoiceStats(s *discordgo.Session, m *discordgo.MessageCreate, ctx context.Context) {
 
 	var guildObject model.ProcessedGuild
 
