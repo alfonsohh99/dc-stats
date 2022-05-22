@@ -5,8 +5,8 @@ import (
 	"log"
 	"strings"
 	"time"
+	"vc-stats/bot/message-handlers"
 	"vc-stats/config"
-	"vc-stats/message-handlers"
 
 	"github.com/bwmarrin/discordgo"
 )
