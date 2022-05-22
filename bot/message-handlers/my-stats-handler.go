@@ -35,7 +35,7 @@ func MyStats(s *discordgo.Session, m *discordgo.MessageCreate, ctx context.Conte
 	}
 
 	var stats string
-	stats += ":beginner: YOUR TOP CHANNELS :beginner:\n\n"
+	stats += ":beginner: YOUR TOP ACTIVE VOICE CHANNELS :beginner:\n\n"
 
 	for _, value := range guildObject.UserData[m.Author.ID].ChannelData {
 		stats += value.ChannelName + ": " + utils.FormatTime(value.Score) + "\n"

@@ -37,7 +37,7 @@ func Top(s *discordgo.Session, m *discordgo.MessageCreate, ctx context.Context) 
 	}
 
 	var response string
-	response += ":beginner: SERVER RANKING :beginner: \n\n"
+	response += ":beginner: SERVER VOICE CHAT RANKING :beginner: \n\n"
 	for index, score := range guildObject.TopUsers {
 		if index == 0 {
 			response += ":trophy:"
