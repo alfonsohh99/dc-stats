@@ -31,7 +31,7 @@ func Top(s *discordgo.Session, m *discordgo.MessageCreate, ctx context.Context) 
 
 	errProcess := findTopUsers.Decode(&guildObject)
 
-	if errProcess != nil {
+	if errProcess != nil || len(guildObject.TopUsers) == 0 {
 		_, _ = s.ChannelMessageSend(m.ChannelID, "No stats aviable for this guild")
 		return
 	}
