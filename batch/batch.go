@@ -2,10 +2,10 @@ package batch
 
 import (
 	"context"
+	"dc-stats/batch/tasks"
+	"dc-stats/constants"
 	"log"
 	"sync"
-	"vc-stats/batch/tasks"
-	"vc-stats/constants"
 
 	"github.com/bwmarrin/discordgo"
 	"github.com/procyon-projects/chrono"

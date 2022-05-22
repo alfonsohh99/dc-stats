@@ -2,10 +2,10 @@ package database
 
 import (
 	"context"
+	"dc-stats/config"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"log"
-	"vc-stats/config"
 )
 
 var (

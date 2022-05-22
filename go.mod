@@ -1,4 +1,4 @@
-module vc-stats
+module dc-stats
 
 go 1.17
 

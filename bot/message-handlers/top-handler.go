@@ -2,10 +2,10 @@ package messagehandlers
 
 import (
 	"context"
+	"dc-stats/database"
+	"dc-stats/model"
+	"dc-stats/utils"
 	"strconv"
-	"vc-stats/database"
-	"vc-stats/model"
-	"vc-stats/utils"
 
 	"github.com/bwmarrin/discordgo"
 	"go.mongodb.org/mongo-driver/bson"

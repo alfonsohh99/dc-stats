@@ -2,9 +2,9 @@ package messagehandlers
 
 import (
 	"context"
-	"vc-stats/database"
-	"vc-stats/model"
-	"vc-stats/utils"
+	"dc-stats/database"
+	"dc-stats/model"
+	"dc-stats/utils"
 
 	"github.com/bwmarrin/discordgo"
 	"go.mongodb.org/mongo-driver/bson"

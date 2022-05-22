@@ -1,7 +1,7 @@
 # Dockerfile
 FROM golang:latest
-RUN mkdir /vc-stats
-ADD . /vc-stats
-WORKDIR /vc-stats
+RUN mkdir /dc-stats
+ADD . /dc-stats
+WORKDIR /dc-stats
 RUN go build -o bot .
-CMD ["/vc-stats/bot"
+CMD ["/dc-stats/bot"

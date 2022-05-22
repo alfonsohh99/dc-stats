@@ -2,11 +2,11 @@ package bot
 
 import (
 	"context"
+	"dc-stats/bot/message-handlers"
+	"dc-stats/config"
 	"log"
 	"strings"
 	"time"
-	"vc-stats/bot/message-handlers"
-	"vc-stats/config"
 
 	"github.com/bwmarrin/discordgo"
 )

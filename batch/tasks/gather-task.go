@@ -2,10 +2,10 @@ package tasks
 
 import (
 	"context"
+	"dc-stats/database"
+	"dc-stats/model"
 	"log"
 	"sync"
-	"vc-stats/database"
-	"vc-stats/model"
 
 	"github.com/bwmarrin/discordgo"
 	"go.mongodb.org/mongo-driver/bson"

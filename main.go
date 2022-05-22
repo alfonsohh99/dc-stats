@@ -2,11 +2,11 @@ package main
 
 import (
 	"context"
+	"dc-stats/batch"
+	"dc-stats/bot"
+	"dc-stats/config"
+	"dc-stats/database"
 	"fmt"
-	"vc-stats/batch"
-	"vc-stats/bot"
-	"vc-stats/config"
-	"vc-stats/database"
 )
 
 var ctx = context.TODO()
