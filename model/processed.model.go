@@ -25,3 +25,12 @@ type ProcessedGuild struct {
 	TopUsers []UserScore              `bson:"top_users"`
 	UserData map[string]ProcessedUser `bson:"user_data"`
 }
+
+func CreateProcessedGuild(id string) (guild ProcessedGuild) {
+	return ProcessedGuild{
+		ID:       primitive.NewObjectID(),
+		GuildID:  id,
+		TopUsers: []UserScore{},
+		UserData: map[string]ProcessedUser{},
+	}
+}
