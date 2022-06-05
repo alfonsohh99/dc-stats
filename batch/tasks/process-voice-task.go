@@ -16,17 +16,16 @@ func ProcessVoiceStats(goBot *discordgo.Session, ctx context.Context, wait *sync
 
 	for _, guild := range goBot.State.Guilds {
 
-		// TODO SAVE CHANNELID -> CHANNELNAME MAP
-		guildChannels, err := goBot.GuildChannels(guild.ID)
+		guildId := guild.ID
+
+		guildChannels, err := goBot.GuildChannels(guildId)
 		if err != nil {
-			// Error retrieving guild channels
 			log.Println("CANNOT ACCESS GUILD CHANNELS")
 			continue
 		}
 
-		guildObject, err := database.FindDataGuild(ctx, guild.ID)
+		guildObject, err := database.FindDataGuild(ctx, guildId)
 		if err != nil {
-			// Error retrieving guild channels
 			log.Println("Cannot find guild to process")
 			continue
 		}
@@ -67,7 +66,7 @@ func ProcessVoiceStats(goBot *discordgo.Session, ctx context.Context, wait *sync
 			return scores[i].Score > scores[j].Score
 		})
 
-		database.SaveOrUpdateProcessedGuild(guild.ID, scores, userData, ctx)
+		database.SaveOrUpdateProcessedGuild(guildId, scores, userData, ctx)
 
 	}
 

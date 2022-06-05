@@ -12,6 +12,8 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
+const MY_VOICE_STATS_MESSAGE_HEADING = ":beginner: YOUR TOP ACTIVE VOICE CHANNELS :beginner:\n\n"
+
 func MyVoiceStats(s *discordgo.Session, m *discordgo.MessageCreate, ctx context.Context) {
 
 	var guildObject model.ProcessedGuild
@@ -23,20 +25,18 @@ func MyVoiceStats(s *discordgo.Session, m *discordgo.MessageCreate, ctx context.
 	})
 	findChannelData := database.ProcessedCollection.FindOne(ctx, filter, optionsFindChannelData)
 	if findChannelData.Err() != nil {
-		_, _ = s.ChannelMessageSend(m.ChannelID, "No stats aviable for this guild")
+		utils.NoStatsAviableForGuild(s, m)
 		return
 	}
 
 	findChannelData.Decode(&guildObject)
 
 	if guildObject.UserData[m.Author.ID].ChannelData == nil || len(guildObject.UserData[m.Author.ID].ChannelData) == 0 {
-		_, _ = s.ChannelMessageSend(m.ChannelID, "No stats aviable for you")
+		utils.NoStatsAviableForYou(s, m)
 		return
 	}
 
-	var stats string
-	stats += ":beginner: YOUR TOP ACTIVE VOICE CHANNELS :beginner:\n\n"
-
+	stats := MY_VOICE_STATS_MESSAGE_HEADING
 	for _, value := range guildObject.UserData[m.Author.ID].ChannelData {
 		stats += value.ChannelName + ": " + utils.FormatTime(value.Score) + "\n"
 	}

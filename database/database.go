@@ -73,24 +73,10 @@ func FindDataGuild(ctx context.Context, guildId string) (model.Guild, error) {
 	return guildObject, nil
 }
 
-func SaveOrUpdateDataGuildVoiceState(guildObject model.Guild, userId string, channelId string, nickName string, ctx context.Context) {
-	savedUser := guildObject.Users[userId]
-	if savedUser.UserID == "" {
-		log.Println("User not created")
-		newUser := model.CreateDataUser(userId, nickName)
-		newUser.UserVoiceActivity[channelId] = 10
-
-		DataCollection.UpdateByID(ctx, guildObject.ID, bson.D{
-			{"$set", bson.D{{"users." + userId, newUser}}},
-		})
-	} else {
-		currentValue := savedUser.UserVoiceActivity[channelId] + 10
-
-		DataCollection.UpdateByID(ctx, guildObject.ID, bson.D{
-			{"$set", bson.D{{"users." + userId + ".user_activity." + channelId, currentValue}}},
-			{"$set", bson.D{{"users." + userId + ".user_name", nickName}}},
-		})
-	}
+func SaveOrUpdateDataGuildUsers(guildObject model.Guild, ctx context.Context) {
+	DataCollection.UpdateByID(ctx, guildObject.ID, bson.D{
+		{"$set", bson.D{{"users", guildObject.Users}}},
+	})
 }
 
 func SaveOrUpdateProcessedGuild(guildId string, scores []model.UserScore, userData map[string]model.ProcessedUser, ctx context.Context) (model.ProcessedGuild, error) {
