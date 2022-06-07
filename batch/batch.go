@@ -15,6 +15,7 @@ var (
 	fetchVoiceDataTask   *chrono.ScheduledTask
 	processVoiceDataTask *chrono.ScheduledTask
 	fetchMessageDataTask *chrono.ScheduledTask
+	fetchNicknamesTask   *chrono.ScheduledTask
 )
 
 func Start(goBot *discordgo.Session) {
@@ -64,6 +65,21 @@ func Start(goBot *discordgo.Session) {
 
 	if err == nil {
 		log.Print("FetchMessageDataTask has been scheduled successfully. Fixed delay: ", constants.FetchMessageDataInterval)
+	}
+
+	/**
+	 * 	GATHER USER NICKNAMES
+	 */
+	task, err = taskScheduler.ScheduleWithFixedDelay(func(ctx context.Context) {
+		var wg sync.WaitGroup
+		wg.Add(1)
+		go tasks.GatherNicknameStats(goBot, ctx, &wg)
+		wg.Wait()
+	}, constants.FetchNicknamesInterval)
+	fetchNicknamesTask = &task
+
+	if err == nil {
+		log.Print("FetchNicknamesTask has been scheduled successfully.  Fixed delay: ", constants.FetchNicknamesInterval)
 	}
 
 }

@@ -4,6 +4,7 @@ import (
 	"context"
 	"dc-stats/database"
 	"dc-stats/model"
+	"dc-stats/utils"
 	"log"
 	"sync"
 
@@ -32,25 +33,21 @@ func GatherVoiceStats(goBot *discordgo.Session, ctx context.Context, wait *sync.
 			lastId = members[len(members)-1].User.ID
 			for _, member := range members {
 
-				nickName := member.Nick
-				if nickName == "" {
-					nickName = member.User.Username
-				}
 				userId := member.User.ID
 
 				voiceState, err := goBot.State.VoiceState(guildId, userId)
 
 				if err == nil {
 					channelId := voiceState.ChannelID
-					savedUser := guildObject.Users[userId]
-					if savedUser.UserID == "" {
-						newUser := model.CreateDataUser(userId, nickName)
+					savedUser, exists := guildObject.Users[userId]
+					if !exists {
+						newUser := model.CreateDataUser(userId, utils.GetUserNickName(*member))
 						newUser.UserVoiceActivity[channelId] = 10
 						guildObject.Users[userId] = newUser
 					} else {
 						currentValue := savedUser.UserVoiceActivity[channelId] + 10
 						savedUser.UserVoiceActivity[channelId] = currentValue
-						savedUser.UserName = nickName
+						guildObject.Users[userId] = savedUser
 					}
 				}
 

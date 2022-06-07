@@ -52,3 +52,11 @@ func NoStatsAviableForGuild(s *discordgo.Session, message *discordgo.MessageCrea
 func NoStatsAviableForYou(s *discordgo.Session, message *discordgo.MessageCreate) {
 	_, _ = s.ChannelMessageSend(message.ChannelID, "No stats aviable for you")
 }
+
+func GetUserNickName(member discordgo.Member) string {
+	nickName := member.Nick
+	if nickName == "" {
+		nickName = member.User.Username
+	}
+	return nickName
+}
