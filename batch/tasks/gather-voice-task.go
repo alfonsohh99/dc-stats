@@ -55,7 +55,7 @@ func GatherVoiceStats(goBot *discordgo.Session, ctx context.Context, wait *sync.
 				}
 
 			}
-			database.SaveOrUpdateDataGuildUsers(guildObject, ctx)
+			database.UpdateDataGuildUsers(guildObject, ctx)
 		}
 	}
 

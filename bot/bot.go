@@ -67,7 +67,7 @@ func messageHandler(s *discordgo.Session, m *discordgo.MessageCreate) {
 			go messagehandlers.Ping(s, m)
 			break
 		}
-	case "myVoiceStats":
+	case "myVoice":
 		{
 			go messagehandlers.MyVoiceStats(s, m, ctx)
 			break

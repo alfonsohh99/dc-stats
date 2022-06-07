@@ -73,8 +73,15 @@ func FindDataGuild(ctx context.Context, guildId string) (model.Guild, error) {
 	return guildObject, nil
 }
 
-func SaveOrUpdateDataGuildUsers(guildObject model.Guild, ctx context.Context) {
+func UpdateDataGuildUsers(guildObject model.Guild, ctx context.Context) {
 	DataCollection.UpdateByID(ctx, guildObject.ID, bson.D{
+		{"$set", bson.D{{"users", guildObject.Users}}},
+	})
+}
+
+func UpdateDataGuildUsersAndChannelMarks(guildObject model.Guild, ctx context.Context) {
+	DataCollection.UpdateByID(ctx, guildObject.ID, bson.D{
+		{"$set", bson.D{{"channel_marks", guildObject.ChannelMarks}}},
 		{"$set", bson.D{{"users", guildObject.Users}}},
 	})
 }

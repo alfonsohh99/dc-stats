@@ -54,16 +54,16 @@ func Start(goBot *discordgo.Session) {
 	/**
 	 *  GATHER MESSAGE STATS TASK
 	 */
-	// task, err = taskScheduler.ScheduleWithFixedDelay(func(ctx context.Context) {
-	// 	var wg sync.WaitGroup
-	// 	wg.Add(1)
-	// 	go tasks.GatherMessageStats(goBot, ctx, &wg)
-	// 	wg.Wait()
-	// }, constants.FetchMessageDataInterval)
-	// fetchMessageDataTask = &task
+	task, err = taskScheduler.ScheduleWithFixedDelay(func(ctx context.Context) {
+		var wg sync.WaitGroup
+		wg.Add(1)
+		go tasks.GatherMessageStats(goBot, ctx, &wg)
+		wg.Wait()
+	}, constants.FetchMessageDataInterval)
+	fetchMessageDataTask = &task
 
-	// if err == nil {
-	// 	log.Print("FetchMessageDataTask has been scheduled successfully. Fixed delay: ", constants.FetchMessageDataInterval)
-	// }
+	if err == nil {
+		log.Print("FetchMessageDataTask has been scheduled successfully. Fixed delay: ", constants.FetchMessageDataInterval)
+	}
 
 }

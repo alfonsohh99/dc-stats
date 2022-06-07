@@ -8,8 +8,6 @@ import (
 	"sync"
 
 	"github.com/bwmarrin/discordgo"
-	"go.mongodb.org/mongo-driver/bson"
-	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 func GatherMessageStats(goBot *discordgo.Session, ctx context.Context, wait *sync.WaitGroup) {
@@ -24,23 +22,21 @@ func GatherMessageStats(goBot *discordgo.Session, ctx context.Context, wait *syn
 		}
 
 		for _, channel := range guild.Channels {
-			if channel.Type != 0 { // && channel.Type != 2
+			if channel.Type != 0 {
 				continue
 			}
 			channelMark := guildObject.ChannelMarks[channel.ID]
 			if channelMark.BeforeId == "" && channelMark.AfterId != "" {
 				messages, err := goBot.ChannelMessages(channel.ID, 100, "", channelMark.AfterId, "")
-				if err != nil {
-					log.Println("Error getting channel mesasges, forward, ", channel.ID)
-					continue
-				}
-				if len(messages) == 0 {
+				if err != nil || len(messages) == 0 {
+					if err != nil {
+						log.Println("Error getting channel mesasges, forward, ", channel.ID)
+					}
 					continue
 				}
 				processMessages(messages, channel.ID, &guildObject, ctx)
 				channelMark.AfterId = messages[0].ID
 				channelMark.TotalMessages += uint64(len(messages))
-				guildObject.ChannelMarks[channel.ID] = channelMark
 
 			} else {
 
@@ -55,8 +51,8 @@ func GatherMessageStats(goBot *discordgo.Session, ctx context.Context, wait *syn
 					if channelMark.BeforeId != "" {
 						log.Println("FINISHED ANALYZING BACKWARDS: ", channel.Name)
 						channelMark.BeforeId = ""
-						guildObject.ChannelMarks[channel.ID] = channelMark
 					}
+					guildObject.ChannelMarks[channel.ID] = channelMark
 					continue
 				}
 
@@ -66,33 +62,23 @@ func GatherMessageStats(goBot *discordgo.Session, ctx context.Context, wait *syn
 					channelMark.AfterId = messages[0].ID
 				}
 				channelMark.BeforeId = messages[len(messages)-1].ID
-				guildObject.ChannelMarks[channel.ID] = channelMark
 			}
+			guildObject.ChannelMarks[channel.ID] = channelMark
 
 		}
-		database.DataCollection.UpdateByID(ctx, guildObject.ID, bson.D{
-			{"$set", bson.D{{"channel_marks", guildObject.ChannelMarks}}},
-			{"$set", bson.D{{"users", guildObject.Users}}},
-		})
-
+		database.UpdateDataGuildUsersAndChannelMarks(guildObject, ctx)
 	}
 
 }
 
 func processMessages(messagess []*discordgo.Message, channelId string, guildObject *model.Guild, ctx context.Context) {
 	for _, message := range messagess {
-		log.Println("MESSAGE")
 		nickName := message.Author.Username
 		// TODO, EN LA CACHE QUE HAREMOS DE ID -> NICKNAME DE USAURIOS MIRAR EL NICK
 		if guildObject.Users[message.Author.ID].UserID == "" {
 			log.Println("User not created")
-			user := model.User{
-				ID:                  primitive.NewObjectID(),
-				UserID:              message.Author.ID,
-				UserName:            nickName,
-				UserVoiceActivity:   map[string]uint64{},
-				UserMessageActivity: map[string]uint64{channelId: 1},
-			}
+			user := model.CreateDataUser(message.Author.ID, nickName)
+			user.UserMessageActivity[channelId] = 1
 			guildObject.Users[message.Author.ID] = user
 		} else {
 			currentValue := guildObject.Users[message.Author.ID].UserMessageActivity[channelId] + 1
