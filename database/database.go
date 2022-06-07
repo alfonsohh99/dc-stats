@@ -86,6 +86,12 @@ func UpdateDataGuildUsersAndChannelMarks(guildObject model.Guild, ctx context.Co
 	})
 }
 
+func UpdateDataGuildChannelMarks(guildObject model.Guild, ctx context.Context) {
+	DataCollection.UpdateByID(ctx, guildObject.ID, bson.D{
+		{"$set", bson.D{{"channel_marks", guildObject.ChannelMarks}}},
+	})
+}
+
 func SaveOrUpdateProcessedGuild(guildId string, scores []model.UserScore, userData map[string]model.ProcessedUser, ctx context.Context) (model.ProcessedGuild, error) {
 
 	var processedGuildObject model.ProcessedGuild

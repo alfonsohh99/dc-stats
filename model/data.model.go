@@ -17,6 +17,7 @@ type MessageMark struct {
 	BeforeId      string `bson:"before_id"`
 	AfterId       string `bson:"after_id"`
 	TotalMessages uint64 `bson:"total_messages"`
+	Name          string `bson:"name"`
 }
 
 type User struct {

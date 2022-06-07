@@ -18,12 +18,6 @@ func ProcessVoiceStats(goBot *discordgo.Session, ctx context.Context, wait *sync
 
 		guildId := guild.ID
 
-		guildChannels, err := goBot.GuildChannels(guildId)
-		if err != nil {
-			log.Println("CANNOT ACCESS GUILD CHANNELS")
-			continue
-		}
-
 		guildObject, err := database.FindDataGuild(ctx, guildId)
 		if err != nil {
 			log.Println("Cannot find guild to process")
@@ -33,22 +27,14 @@ func ProcessVoiceStats(goBot *discordgo.Session, ctx context.Context, wait *sync
 		scores := []model.UserScore{}
 		userData := map[string]model.ProcessedUser{}
 		for _, user := range guildObject.Users {
-			// CALCULATING CHANNEL DATA  AND TOTAL SCORE PER USER
 			channelData := []model.ChannelData{}
 			var totalScore uint64
 			for channelId, value := range user.UserVoiceActivity {
-				channelNameFound := false
-				// TODO SAVE CHANNELID -> CHANNELNAME MAP
-				for _, channel := range guildChannels {
-					if channel.ID == channelId {
-						channelData = append(channelData, model.ChannelData{ChannelName: channel.Name, Score: value})
-						channelNameFound = true
-						break
-					}
+				channelName := guildObject.ChannelMarks[channelId].Name
+				if channelName == "" {
+					channelName = "[" + channelId + "], "
 				}
-				if !channelNameFound {
-					channelData = append(channelData, model.ChannelData{ChannelName: "[" + channelId + "], ", Score: value})
-				}
+				channelData = append(channelData, model.ChannelData{ChannelName: channelName, Score: value})
 				totalScore += value
 
 			}
