@@ -3,7 +3,6 @@ package tasks
 import (
 	"context"
 	"dc-stats/database"
-	"dc-stats/model"
 	"log"
 	"sync"
 
@@ -21,21 +20,9 @@ func GatherChannelNameStats(goBot *discordgo.Session, ctx context.Context, wait 
 			continue
 		}
 		for _, channel := range guild.Channels {
-			mark, exists := guildObject.ChannelMarks[channel.ID]
-			if !exists {
-				newMark := model.MessageMark{
-					BeforeId:      "",
-					AfterId:       "",
-					TotalMessages: 0,
-					Name:          channel.Name,
-				}
-				guildObject.ChannelMarks[channel.ID] = newMark
-			} else {
-				mark.Name = channel.Name
-				guildObject.ChannelMarks[channel.ID] = mark
-			}
+			guildObject.ChannelNameMap[channel.ID] = channel.Name
 		}
-		database.UpdateDataGuildChannelMarks(guildObject, ctx)
+		database.UpdateDataGuildChannelNameMap(guildObject, ctx)
 	}
 
 }

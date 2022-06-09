@@ -86,9 +86,15 @@ func UpdateDataGuildUsersAndChannelMarks(guildObject model.Guild, ctx context.Co
 	})
 }
 
-func UpdateDataGuildChannelMarks(guildObject model.Guild, ctx context.Context) {
+func UpdateDataGuildUserNicknameMap(guildObject model.Guild, ctx context.Context) {
 	DataCollection.UpdateByID(ctx, guildObject.ID, bson.D{
-		{"$set", bson.D{{"channel_marks", guildObject.ChannelMarks}}},
+		{"$set", bson.D{{"user_nickname_map", guildObject.UserNicknameMap}}},
+	})
+}
+
+func UpdateDataGuildChannelNameMap(guildObject model.Guild, ctx context.Context) {
+	DataCollection.UpdateByID(ctx, guildObject.ID, bson.D{
+		{"$set", bson.D{{"channel_name_map", guildObject.ChannelNameMap}}},
 	})
 }
 

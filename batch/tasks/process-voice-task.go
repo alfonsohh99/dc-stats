@@ -30,8 +30,8 @@ func ProcessVoiceStats(goBot *discordgo.Session, ctx context.Context, wait *sync
 			channelData := []model.ChannelData{}
 			var totalScore uint64
 			for channelId, value := range user.UserVoiceActivity {
-				channelName := guildObject.ChannelMarks[channelId].Name
-				if channelName == "" {
+				channelName, exists := guildObject.ChannelNameMap[channelId]
+				if !exists {
 					channelName = "[" + channelId + "], "
 				}
 				channelData = append(channelData, model.ChannelData{ChannelName: channelName, Score: value})
@@ -39,7 +39,7 @@ func ProcessVoiceStats(goBot *discordgo.Session, ctx context.Context, wait *sync
 
 			}
 			if totalScore != 0 {
-				scores = append(scores, model.UserScore{Username: user.UserName, Score: totalScore})
+				scores = append(scores, model.UserScore{Username: guildObject.UserNicknameMap[user.UserID], Score: totalScore})
 				sort.SliceStable(channelData, func(i, j int) bool {
 					return channelData[i].Score > channelData[j].Score
 				})

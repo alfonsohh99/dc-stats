@@ -30,7 +30,7 @@ func GatherMessageStats(goBot *discordgo.Session, ctx context.Context, wait *syn
 				messages, err := goBot.ChannelMessages(channel.ID, 100, "", channelMark.AfterId, "")
 				if err != nil || len(messages) == 0 {
 					if err != nil {
-						log.Println("Error getting channel mesasges, forward, ", channel.ID)
+						log.Println("Error getting channel mesasges, forward, ", channel.ID, err)
 					}
 					continue
 				}
@@ -43,7 +43,7 @@ func GatherMessageStats(goBot *discordgo.Session, ctx context.Context, wait *syn
 				messages, err := goBot.ChannelMessages(channel.ID, 100, channelMark.BeforeId, "", "")
 
 				if err != nil {
-					log.Println("Error getting channel mesasges, backwards, ", channel.ID)
+					log.Println("Error getting channel mesasges, backwards, ", channel.ID, err)
 					continue
 				}
 
@@ -73,11 +73,9 @@ func GatherMessageStats(goBot *discordgo.Session, ctx context.Context, wait *syn
 
 func processMessages(messagess []*discordgo.Message, channelId string, guildObject *model.Guild, ctx context.Context) {
 	for _, message := range messagess {
-		nickName := message.Author.Username
-		// TODO, EN LA CACHE QUE HAREMOS DE ID -> NICKNAME DE USAURIOS MIRAR EL NICK
 		if guildObject.Users[message.Author.ID].UserID == "" {
 			log.Println("User not created")
-			user := model.CreateDataUser(message.Author.ID, nickName)
+			user := model.CreateDataUser(message.Author.ID)
 			user.UserMessageActivity[channelId] = 1
 			guildObject.Users[message.Author.ID] = user
 		} else {

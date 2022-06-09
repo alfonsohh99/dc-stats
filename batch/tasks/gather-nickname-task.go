@@ -3,7 +3,6 @@ package tasks
 import (
 	"context"
 	"dc-stats/database"
-	"dc-stats/model"
 	"dc-stats/utils"
 	"log"
 	"sync"
@@ -21,7 +20,6 @@ func GatherNicknameStats(goBot *discordgo.Session, ctx context.Context, wait *sy
 			log.Println("Error finding/creating guild", err)
 			continue
 		}
-
 		lastId := ""
 		for {
 			members, err := goBot.GuildMembers(guildId, lastId, 1000)
@@ -30,22 +28,11 @@ func GatherNicknameStats(goBot *discordgo.Session, ctx context.Context, wait *sy
 			}
 			lastId = members[len(members)-1].User.ID
 			for _, member := range members {
-
 				userId := member.User.ID
 				nickName := utils.GetUserNickName(*member)
-
-				savedUser, exists := guildObject.Users[userId]
-				if !exists {
-					newUser := model.CreateDataUser(userId, nickName)
-					newUser.UserName = nickName
-					guildObject.Users[userId] = newUser
-				} else {
-					savedUser.UserName = nickName
-					guildObject.Users[userId] = savedUser
-				}
-
+				guildObject.UserNicknameMap[userId] = nickName
 			}
-			database.UpdateDataGuildUsers(guildObject, ctx)
+			database.UpdateDataGuildUserNicknameMap(guildObject, ctx)
 		}
 	}
 
