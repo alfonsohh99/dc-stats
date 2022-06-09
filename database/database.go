@@ -98,7 +98,7 @@ func UpdateDataGuildChannelNameMap(guildObject model.Guild, ctx context.Context)
 	})
 }
 
-func SaveOrUpdateProcessedGuild(guildId string, scores []model.UserScore, userData map[string]model.ProcessedUser, ctx context.Context) (model.ProcessedGuild, error) {
+func SaveOrUpdateProcessedGuildFromVoice(guildId string, scores []model.UserScore, userData map[string]model.ProcessedUser, ctx context.Context) (model.ProcessedGuild, error) {
 
 	var processedGuildObject model.ProcessedGuild
 
@@ -107,12 +107,9 @@ func SaveOrUpdateProcessedGuild(guildId string, scores []model.UserScore, userDa
 	if findProcessedGuild.Err() != nil {
 		//Guild doesnt exist
 		log.Println("PROCESSED GUILD NOT PRESSENT", findProcessedGuild.Err().Error())
-		newGuild := model.ProcessedGuild{
-			ID:       primitive.NewObjectID(),
-			GuildID:  guildId,
-			TopUsers: scores,
-			UserData: userData,
-		}
+		newGuild := model.CreateProcessedGuild(guildId)
+		newGuild.TopUsers = scores
+		newGuild.UserData = userData
 		data, err := ProcessedCollection.InsertOne(ctx, newGuild)
 		if err != nil {
 			log.Println(err)
@@ -125,6 +122,35 @@ func SaveOrUpdateProcessedGuild(guildId string, scores []model.UserScore, userDa
 		ProcessedCollection.UpdateByID(ctx, processedGuildObject.ID, bson.D{
 			{"$set", bson.D{{"top_users", scores}}},
 			{"$set", bson.D{{"user_data", userData}}},
+		})
+	}
+	return processedGuildObject, nil
+}
+
+func SaveOrUpdateProcessedGuildFromMessage(guildId string, scores []model.UserScore, userData map[string]model.ProcessedUser, ctx context.Context) (model.ProcessedGuild, error) {
+
+	var processedGuildObject model.ProcessedGuild
+
+	filter := bson.D{primitive.E{Key: "guild_id", Value: guildId}}
+	findProcessedGuild := ProcessedCollection.FindOne(ctx, filter)
+	if findProcessedGuild.Err() != nil {
+		//Guild doesnt exist
+		log.Println("PROCESSED GUILD NOT PRESSENT", findProcessedGuild.Err().Error())
+		newGuild := model.CreateProcessedGuild(guildId)
+		newGuild.TopMessageUsers = scores
+		newGuild.UserMessageData = userData
+		data, err := ProcessedCollection.InsertOne(ctx, newGuild)
+		if err != nil {
+			log.Println(err)
+			return processedGuildObject, err
+		}
+		log.Println("CREATED PROCESSED GUILD, ", data)
+		processedGuildObject = newGuild
+	} else {
+		findProcessedGuild.Decode(&processedGuildObject)
+		ProcessedCollection.UpdateByID(ctx, processedGuildObject.ID, bson.D{
+			{"$set", bson.D{{"top_message_users", scores}}},
+			{"$set", bson.D{{"user_message_data", userData}}},
 		})
 	}
 	return processedGuildObject, nil

@@ -11,7 +11,7 @@ import (
 	"github.com/bwmarrin/discordgo"
 )
 
-func ProcessVoiceStats(goBot *discordgo.Session, ctx context.Context, wait *sync.WaitGroup) {
+func ProcessMessageStats(goBot *discordgo.Session, ctx context.Context, wait *sync.WaitGroup) {
 	defer wait.Done()
 
 	for _, guild := range goBot.State.Guilds {
@@ -26,10 +26,11 @@ func ProcessVoiceStats(goBot *discordgo.Session, ctx context.Context, wait *sync
 
 		scores := []model.UserScore{}
 		userData := map[string]model.ProcessedUser{}
+
 		for _, user := range guildObject.Users {
 			channelData := []model.ChannelData{}
 			var totalScore uint64
-			for channelId, value := range user.UserVoiceActivity {
+			for channelId, value := range user.UserMessageActivity {
 				channelName, exists := guildObject.ChannelNameMap[channelId]
 				if !exists {
 					channelName = "[" + channelId + "], "
@@ -38,21 +39,24 @@ func ProcessVoiceStats(goBot *discordgo.Session, ctx context.Context, wait *sync
 				totalScore += value
 
 			}
+			nickname := guildObject.UserNicknameMap[user.UserID]
+			if nickname == "" {
+				nickname = "[USER_NOT_PRESSENT]"
+			}
 			if totalScore != 0 {
-				scores = append(scores, model.UserScore{Username: guildObject.UserNicknameMap[user.UserID], Score: totalScore})
+				scores = append(scores, model.UserScore{Username: nickname, Score: totalScore})
 				sort.SliceStable(channelData, func(i, j int) bool {
 					return channelData[i].Score > channelData[j].Score
 				})
 				userData[user.UserID] = model.ProcessedUser{Score: totalScore, ChannelData: channelData}
 			}
-
 		}
 
 		sort.SliceStable(scores, func(i, j int) bool {
 			return scores[i].Score > scores[j].Score
 		})
 
-		database.SaveOrUpdateProcessedGuildFromVoice(guildId, scores, userData, ctx)
+		database.SaveOrUpdateProcessedGuildFromMessage(guildId, scores, userData, ctx)
 
 	}
 
