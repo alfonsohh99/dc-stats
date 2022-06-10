@@ -33,7 +33,7 @@ func Start(goBot *discordgo.Session) {
 		wg.Add(1)
 		go tasks.GatherVoiceStats(goBot, ctx, &wg)
 		wg.Wait()
-	}, constants.FetchVoiceDataInterval, chrono.WithTime(<-time.After(constants.FetchVoiceDataInterval)))
+	}, constants.FetchVoiceDataInterval, chrono.WithTime(time.Now().Add(constants.FetchVoiceDataInterval)))
 	fetchVoiceDataTask = &task
 
 	if err == nil {
@@ -48,7 +48,7 @@ func Start(goBot *discordgo.Session) {
 		wg.Add(1)
 		go tasks.ProcessVoiceStats(goBot, ctx, &wg)
 		wg.Wait()
-	}, constants.ProcessVoiceDataInterval, chrono.WithTime(<-time.After(constants.ProcessVoiceDataInterval)))
+	}, constants.ProcessVoiceDataInterval, chrono.WithTime(time.Now().Add(constants.ProcessVoiceDataInterval)))
 	processVoiceDataTask = &task
 
 	if err == nil {
@@ -63,7 +63,7 @@ func Start(goBot *discordgo.Session) {
 		wg.Add(1)
 		go tasks.GatherMessageStats(goBot, ctx, &wg)
 		wg.Wait()
-	}, constants.FetchMessageDataInterval, chrono.WithTime(<-time.After(constants.FetchMessageDataInterval)))
+	}, constants.FetchMessageDataInterval, chrono.WithTime(time.Now().Add(constants.FetchMessageDataInterval)))
 	fetchMessageDataTask = &task
 
 	if err == nil {
@@ -78,7 +78,7 @@ func Start(goBot *discordgo.Session) {
 		wg.Add(1)
 		go tasks.ProcessMessageStats(goBot, ctx, &wg)
 		wg.Wait()
-	}, constants.ProcessMessageDataInterval, chrono.WithTime(<-time.After(constants.ProcessMessageDataInterval)))
+	}, constants.ProcessMessageDataInterval, chrono.WithTime(time.Now().Add(constants.ProcessMessageDataInterval)))
 	processMessageDataTask = &task
 
 	if err == nil {

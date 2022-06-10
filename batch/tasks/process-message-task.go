@@ -41,7 +41,7 @@ func ProcessMessageStats(goBot *discordgo.Session, ctx context.Context, wait *sy
 			}
 			nickname := guildObject.UserNicknameMap[user.UserID]
 			if nickname == "" {
-				nickname = "[USER_NOT_PRESSENT]"
+				nickname = "[USER_NOT_PRESENT]"
 			}
 			if totalScore != 0 {
 				scores = append(scores, model.UserScore{Username: nickname, Score: totalScore})

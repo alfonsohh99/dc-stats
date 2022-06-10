@@ -2,6 +2,7 @@ package utils
 
 import (
 	"github.com/bwmarrin/discordgo"
+	"log"
 	"strconv"
 )
 
@@ -45,7 +46,8 @@ func FormatTime(timeSeconds uint64) string {
 	return res
 }
 
-func NoStatsAviableForGuild(s *discordgo.Session, message *discordgo.MessageCreate) {
+func NoStatsAviableForGuild(s *discordgo.Session, message *discordgo.MessageCreate, err error) {
+	log.Println(err)
 	_, _ = s.ChannelMessageSend(message.ChannelID, "No stats aviable for this guild")
 }
 

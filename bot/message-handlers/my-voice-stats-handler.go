@@ -25,7 +25,7 @@ func MyVoiceStats(s *discordgo.Session, m *discordgo.MessageCreate, ctx context.
 	})
 	findChannelData := database.ProcessedCollection.FindOne(ctx, filter, optionsFindChannelData)
 	if findChannelData.Err() != nil {
-		utils.NoStatsAviableForGuild(s, m)
+		utils.NoStatsAviableForGuild(s, m, findChannelData.Err())
 		return
 	}
 

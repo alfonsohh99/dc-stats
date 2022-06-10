@@ -77,6 +77,11 @@ func messageHandler(s *discordgo.Session, m *discordgo.MessageCreate) {
 			go messagehandlers.TopVoice(s, m, ctx)
 			break
 		}
+	case "topMessage":
+		{
+			go messagehandlers.TopMessage(s, m, ctx)
+			break
+		}
 
 	}
 }
