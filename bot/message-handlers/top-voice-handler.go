@@ -13,7 +13,7 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
-const TOP_VOICE_MESSAGE_HEADING = ":beginner: SERVER VOICE CHAT RANKING :beginner: \n\n"
+const TOP_VOICE_MESSAGE_HEADING = "**:speaking_head: SERVER VOICE CHAT RANKING :speaking_head:**\n\n"
 const TROHPY_EMOJI = ":trophy:"
 
 func TopVoice(s *discordgo.Session, m *discordgo.MessageCreate, ctx context.Context) {

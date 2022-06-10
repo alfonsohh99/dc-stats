@@ -72,6 +72,11 @@ func messageHandler(s *discordgo.Session, m *discordgo.MessageCreate) {
 			go messagehandlers.MyVoiceStats(s, m, ctx)
 			break
 		}
+	case "myMessage":
+		{
+			go messagehandlers.MyMessageStats(s, m, ctx)
+			break
+		}
 	case "topVoice":
 		{
 			go messagehandlers.TopVoice(s, m, ctx)

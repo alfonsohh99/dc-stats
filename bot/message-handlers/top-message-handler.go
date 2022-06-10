@@ -13,7 +13,7 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
-const TOP_MESSAGE_MESSAGE_HEADING = ":beginner: SERVER CHAT MESSAGE RANKING :beginner: \n\n"
+const TOP_MESSAGE_MESSAGE_HEADING = "**:newspaper: SERVER CHAT MESSAGE RANKING :newspaper:**\n\n"
 
 func TopMessage(s *discordgo.Session, m *discordgo.MessageCreate, ctx context.Context) {
 
