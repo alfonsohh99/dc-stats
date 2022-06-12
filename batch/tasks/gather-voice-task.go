@@ -3,7 +3,7 @@ package tasks
 import (
 	"context"
 	"dc-stats/database"
-	"dc-stats/model"
+	"dc-stats/model/data"
 	"log"
 	"sync"
 
@@ -40,7 +40,7 @@ func GatherVoiceStats(goBot *discordgo.Session, ctx context.Context, wait *sync.
 					channelId := voiceState.ChannelID
 					savedUser, exists := guildObject.Users[userId]
 					if !exists {
-						newUser := model.CreateDataUser(userId)
+						newUser := dataModel.CreateUser(userId)
 						newUser.UserVoiceActivity[channelId] = 10
 						guildObject.Users[userId] = newUser
 					} else {

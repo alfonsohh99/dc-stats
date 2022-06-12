@@ -3,7 +3,7 @@ package messagehandlers
 import (
 	"context"
 	"dc-stats/database"
-	"dc-stats/model"
+	"dc-stats/model/processed"
 	"dc-stats/utils"
 	"strconv"
 
@@ -17,7 +17,7 @@ const MY_MESSAGE_STATS_MESSAGE_HEADING = "**:newspaper: YOUR TOP ACTIVE CHANNELS
 
 func MyMessageStats(s *discordgo.Session, m *discordgo.MessageCreate, ctx context.Context) {
 
-	var guildObject model.ProcessedGuild
+	var guildObject processedModel.Guild
 
 	filter := bson.D{primitive.E{Key: "guild_id", Value: m.GuildID}}
 	optionsFindChannelData := options.FindOne().SetProjection(bson.M{

@@ -3,7 +3,8 @@ package tasks
 import (
 	"context"
 	"dc-stats/database"
-	"dc-stats/model"
+	dataModel "dc-stats/model/data"
+
 	"log"
 	"sync"
 
@@ -71,11 +72,11 @@ func GatherMessageStats(goBot *discordgo.Session, ctx context.Context, wait *syn
 
 }
 
-func processMessages(messagess []*discordgo.Message, channelId string, guildObject *model.Guild, ctx context.Context) {
+func processMessages(messagess []*discordgo.Message, channelId string, guildObject *dataModel.Guild, ctx context.Context) {
 	for _, message := range messagess {
 		if guildObject.Users[message.Author.ID].UserID == "" {
 			log.Println("User not created")
-			user := model.CreateDataUser(message.Author.ID)
+			user := dataModel.CreateUser(message.Author.ID)
 			user.UserMessageActivity[channelId] = 1
 			guildObject.Users[message.Author.ID] = user
 		} else {

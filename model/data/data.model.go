@@ -1,4 +1,4 @@
-package model
+package dataModel
 
 import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -26,7 +26,7 @@ type User struct {
 	UserMessageActivity map[string]uint64  `bson:"user_message_activity"`
 }
 
-func CreateDataGuild(id string) (guild Guild) {
+func CreateGuild(id string) (guild Guild) {
 	return Guild{
 		ID:              primitive.NewObjectID(),
 		GuildID:         id,
@@ -37,7 +37,7 @@ func CreateDataGuild(id string) (guild Guild) {
 	}
 }
 
-func CreateDataUser(id string) (user User) {
+func CreateUser(id string) (user User) {
 	return User{
 		ID:                  primitive.NewObjectID(),
 		UserID:              id,

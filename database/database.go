@@ -3,7 +3,8 @@ package database
 import (
 	"context"
 	"dc-stats/config"
-	"dc-stats/model"
+	"dc-stats/model/data"
+	"dc-stats/model/processed"
 	"log"
 
 	"go.mongodb.org/mongo-driver/bson"
@@ -37,16 +38,16 @@ func Start(ctx context.Context) {
 	ProcessedCollection = client.Database("discord").Collection("vc-processed")
 }
 
-func FindOrCreateDataGuild(id string, ctx context.Context) (guild model.Guild, err error) {
+func FindOrCreateDataGuild(id string, ctx context.Context) (guild dataModel.Guild, err error) {
 
-	var guildObject model.Guild
+	var guildObject dataModel.Guild
 
 	filter := bson.D{primitive.E{Key: "guild_id", Value: id}}
 	findGuild := DataCollection.FindOne(ctx, filter)
 	if findGuild.Err() != nil {
 		//Guild doesnt exist
 		log.Println("GUILD NOT PRESSENT", findGuild.Err().Error())
-		newGuild := model.CreateDataGuild(id)
+		newGuild := dataModel.CreateGuild(id)
 		data, err := DataCollection.InsertOne(ctx, newGuild)
 		if err != nil {
 			return guildObject, err
@@ -60,8 +61,8 @@ func FindOrCreateDataGuild(id string, ctx context.Context) (guild model.Guild, e
 	return guildObject, nil
 }
 
-func FindDataGuild(ctx context.Context, guildId string) (model.Guild, error) {
-	var guildObject model.Guild
+func FindDataGuild(ctx context.Context, guildId string) (dataModel.Guild, error) {
+	var guildObject dataModel.Guild
 	filter := bson.D{primitive.E{Key: "guild_id", Value: guildId}}
 	findGuild := DataCollection.FindOne(ctx, filter)
 	if findGuild.Err() != nil {
@@ -73,41 +74,41 @@ func FindDataGuild(ctx context.Context, guildId string) (model.Guild, error) {
 	return guildObject, nil
 }
 
-func UpdateDataGuildUsers(guildObject model.Guild, ctx context.Context) {
+func UpdateDataGuildUsers(guildObject dataModel.Guild, ctx context.Context) {
 	DataCollection.UpdateByID(ctx, guildObject.ID, bson.D{
 		{"$set", bson.D{{"users", guildObject.Users}}},
 	})
 }
 
-func UpdateDataGuildUsersAndChannelMarks(guildObject model.Guild, ctx context.Context) {
+func UpdateDataGuildUsersAndChannelMarks(guildObject dataModel.Guild, ctx context.Context) {
 	DataCollection.UpdateByID(ctx, guildObject.ID, bson.D{
 		{"$set", bson.D{{"channel_marks", guildObject.ChannelMarks}}},
 		{"$set", bson.D{{"users", guildObject.Users}}},
 	})
 }
 
-func UpdateDataGuildUserNicknameMap(guildObject model.Guild, ctx context.Context) {
+func UpdateDataGuildUserNicknameMap(guildObject dataModel.Guild, ctx context.Context) {
 	DataCollection.UpdateByID(ctx, guildObject.ID, bson.D{
 		{"$set", bson.D{{"user_nickname_map", guildObject.UserNicknameMap}}},
 	})
 }
 
-func UpdateDataGuildChannelNameMap(guildObject model.Guild, ctx context.Context) {
+func UpdateDataGuildChannelNameMap(guildObject dataModel.Guild, ctx context.Context) {
 	DataCollection.UpdateByID(ctx, guildObject.ID, bson.D{
 		{"$set", bson.D{{"channel_name_map", guildObject.ChannelNameMap}}},
 	})
 }
 
-func SaveOrUpdateProcessedGuildFromVoice(guildId string, scores []model.UserScore, userData map[string]model.ProcessedUser, ctx context.Context) (model.ProcessedGuild, error) {
+func SaveOrUpdateProcessedGuildFromVoice(guildId string, scores []processedModel.UserScore, userData map[string]processedModel.User, ctx context.Context) (processedModel.Guild, error) {
 
-	var processedGuildObject model.ProcessedGuild
+	var processedGuildObject processedModel.Guild
 
 	filter := bson.D{primitive.E{Key: "guild_id", Value: guildId}}
 	findProcessedGuild := ProcessedCollection.FindOne(ctx, filter)
 	if findProcessedGuild.Err() != nil {
 		//Guild doesnt exist
 		log.Println("PROCESSED GUILD NOT PRESSENT", findProcessedGuild.Err().Error())
-		newGuild := model.CreateProcessedGuild(guildId)
+		newGuild := processedModel.CreateGuild(guildId)
 		newGuild.TopUsers = scores
 		newGuild.UserData = userData
 		data, err := ProcessedCollection.InsertOne(ctx, newGuild)
@@ -127,16 +128,16 @@ func SaveOrUpdateProcessedGuildFromVoice(guildId string, scores []model.UserScor
 	return processedGuildObject, nil
 }
 
-func SaveOrUpdateProcessedGuildFromMessage(guildId string, scores []model.UserScore, userData map[string]model.ProcessedUser, ctx context.Context) (model.ProcessedGuild, error) {
+func SaveOrUpdateProcessedGuildFromMessage(guildId string, scores []processedModel.UserScore, userData map[string]processedModel.User, ctx context.Context) (processedModel.Guild, error) {
 
-	var processedGuildObject model.ProcessedGuild
+	var processedGuildObject processedModel.Guild
 
 	filter := bson.D{primitive.E{Key: "guild_id", Value: guildId}}
 	findProcessedGuild := ProcessedCollection.FindOne(ctx, filter)
 	if findProcessedGuild.Err() != nil {
 		//Guild doesnt exist
 		log.Println("PROCESSED GUILD NOT PRESSENT", findProcessedGuild.Err().Error())
-		newGuild := model.CreateProcessedGuild(guildId)
+		newGuild := processedModel.CreateGuild(guildId)
 		newGuild.TopMessageUsers = scores
 		newGuild.UserMessageData = userData
 		data, err := ProcessedCollection.InsertOne(ctx, newGuild)

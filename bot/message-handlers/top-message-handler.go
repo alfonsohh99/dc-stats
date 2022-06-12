@@ -3,7 +3,7 @@ package messagehandlers
 import (
 	"context"
 	"dc-stats/database"
-	"dc-stats/model"
+	"dc-stats/model/processed"
 	"dc-stats/utils"
 	"strconv"
 
@@ -17,7 +17,7 @@ const TOP_MESSAGE_MESSAGE_HEADING = "**:newspaper: SERVER CHAT MESSAGE RANKING :
 
 func TopMessage(s *discordgo.Session, m *discordgo.MessageCreate, ctx context.Context) {
 
-	var guildObject model.ProcessedGuild
+	var guildObject processedModel.Guild
 
 	filter := bson.D{primitive.E{Key: "guild_id", Value: m.GuildID}}
 	opts := options.FindOne().SetProjection(bson.M{

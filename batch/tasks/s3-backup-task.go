@@ -4,7 +4,7 @@ import (
 	"context"
 	botConfig "dc-stats/config"
 	"dc-stats/database"
-	"dc-stats/model"
+	"dc-stats/model/data"
 	"encoding/json"
 	"log"
 	"strings"
@@ -38,7 +38,7 @@ func S3BackupTask(ctx context.Context, wait *sync.WaitGroup) {
 	dateNow := time.Now()
 
 	for next := cursor.Next(ctx); next; next = cursor.Next(ctx) {
-		guildItem := model.Guild{}
+		guildItem := dataModel.Guild{}
 		cursor.Decode(&guildItem)
 
 		guildString, err := json.Marshal(guildItem)

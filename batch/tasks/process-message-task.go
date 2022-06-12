@@ -3,7 +3,7 @@ package tasks
 import (
 	"context"
 	"dc-stats/database"
-	"dc-stats/model"
+	"dc-stats/model/processed"
 	"log"
 	"sort"
 	"sync"
@@ -24,18 +24,18 @@ func ProcessMessageStats(goBot *discordgo.Session, ctx context.Context, wait *sy
 			continue
 		}
 
-		scores := []model.UserScore{}
-		userData := map[string]model.ProcessedUser{}
+		scores := []processedModel.UserScore{}
+		userData := map[string]processedModel.User{}
 
 		for _, user := range guildObject.Users {
-			channelData := []model.ChannelData{}
+			channelData := []processedModel.ChannelData{}
 			var totalScore uint64
 			for channelId, value := range user.UserMessageActivity {
 				channelName, exists := guildObject.ChannelNameMap[channelId]
 				if !exists {
 					channelName = "[" + channelId + "], "
 				}
-				channelData = append(channelData, model.ChannelData{ChannelName: channelName, Score: value})
+				channelData = append(channelData, processedModel.ChannelData{ChannelName: channelName, Score: value})
 				totalScore += value
 
 			}
@@ -44,11 +44,11 @@ func ProcessMessageStats(goBot *discordgo.Session, ctx context.Context, wait *sy
 				nickname = "[USER_NOT_PRESENT]"
 			}
 			if totalScore != 0 {
-				scores = append(scores, model.UserScore{Username: nickname, Score: totalScore})
+				scores = append(scores, processedModel.UserScore{Username: nickname, Score: totalScore})
 				sort.SliceStable(channelData, func(i, j int) bool {
 					return channelData[i].Score > channelData[j].Score
 				})
-				userData[user.UserID] = model.ProcessedUser{Score: totalScore, ChannelData: channelData}
+				userData[user.UserID] = processedModel.User{Score: totalScore, ChannelData: channelData}
 			}
 		}
 
