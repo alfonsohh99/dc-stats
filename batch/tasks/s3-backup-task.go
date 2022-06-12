@@ -2,6 +2,7 @@ package tasks
 
 import (
 	"context"
+	botConfig "dc-stats/config"
 	"dc-stats/database"
 	"dc-stats/model"
 	"encoding/json"
@@ -53,7 +54,7 @@ func S3BackupTask(ctx context.Context, wait *sync.WaitGroup) {
 	uploader := manager.NewUploader(client)
 	dateNow := time.Now()
 	_, err = uploader.Upload(ctx, &s3.PutObjectInput{
-		Bucket: aws.String("dc-stats"),
+		Bucket: aws.String(botConfig.S3Bucket),
 		Key:    aws.String("backups/" + dateNow.Format("2006-01") + "/" + dateNow.Format("2006-01-06 15:04:05")),
 		Body:   strings.NewReader(string(guildListString)),
 	})

@@ -13,6 +13,7 @@ var (
 	DatabaseUser     string
 	DatabaseEndpoint string
 	DatabasePort     string
+	S3Bucket         string
 
 	config *configStruct
 )
@@ -24,6 +25,7 @@ type configStruct struct {
 	DatabaseUser     string `json:"DatabaseUser"`
 	DatabaseEndpoint string `json:"DatabaseEndpoint"`
 	DatabasePort     string `json:"DatabasePort"`
+	S3Bucket         string `json:"S3Bucket"`
 }
 
 func ReadConfig() error {
@@ -48,6 +50,7 @@ func ReadConfig() error {
 	DatabaseUser = config.DatabaseUser
 	DatabaseEndpoint = config.DatabaseEndpoint
 	DatabasePort = config.DatabasePort
+	S3Bucket = config.S3Bucket
 
 	return nil
 
