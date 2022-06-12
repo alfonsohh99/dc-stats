@@ -12,3 +12,5 @@ const ProcessMessageDataInterval time.Duration = time.Duration(480) * time.Secon
 
 const FetchNicknamesInterval time.Duration = time.Duration(240) * time.Second
 const FetchChannelNamesInterval time.Duration = time.Duration(240) * time.Second
+
+const S3BackupCronExpression string = "00 00 00 * * *"

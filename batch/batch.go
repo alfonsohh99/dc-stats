@@ -19,6 +19,7 @@ var (
 	processMessageDataTask *chrono.ScheduledTask
 	fetchNicknamesTask     *chrono.ScheduledTask
 	fetchChannelNamesTask  *chrono.ScheduledTask
+	processS3BackupTask    *chrono.ScheduledTask
 )
 
 func Start(goBot *discordgo.Session) {
@@ -38,6 +39,8 @@ func Start(goBot *discordgo.Session) {
 
 	if err == nil {
 		log.Print("FetchVoiceDataTask has been scheduled successfully.  Fixed delay: ", constants.FetchVoiceDataInterval)
+	} else {
+		log.Println("Error scheduling task FetchVoiceDataTask: ", err)
 	}
 
 	/**
@@ -53,6 +56,8 @@ func Start(goBot *discordgo.Session) {
 
 	if err == nil {
 		log.Print("ProcessVoiceDataTask has been scheduled successfully. Fixed delay: ", constants.ProcessVoiceDataInterval)
+	} else {
+		log.Println("Error scheduling task ProcessVoiceDataTask: ", err)
 	}
 
 	/**
@@ -68,6 +73,8 @@ func Start(goBot *discordgo.Session) {
 
 	if err == nil {
 		log.Print("FetchMessageDataTask has been scheduled successfully. Fixed delay: ", constants.FetchMessageDataInterval)
+	} else {
+		log.Println("Error scheduling task FetchMessageDataTask: ", err)
 	}
 
 	/**
@@ -83,6 +90,8 @@ func Start(goBot *discordgo.Session) {
 
 	if err == nil {
 		log.Print("ProcessMessageDataTask has been scheduled successfully. Fixed delay: ", constants.ProcessMessageDataInterval)
+	} else {
+		log.Println("Error scheduling task ProcessMessageDataTask: ", err)
 	}
 
 	/**
@@ -98,6 +107,8 @@ func Start(goBot *discordgo.Session) {
 
 	if err == nil {
 		log.Print("FetchNicknamesTask has been scheduled successfully.  Fixed delay: ", constants.FetchNicknamesInterval)
+	} else {
+		log.Println("Error scheduling task FetchNicknamesTask: ", err)
 	}
 
 	/**
@@ -113,6 +124,25 @@ func Start(goBot *discordgo.Session) {
 
 	if err == nil {
 		log.Print("FetchChannelNamesTask has been scheduled successfully.  Fixed delay: ", constants.FetchChannelNamesInterval)
+	} else {
+		log.Println("Error scheduling task FetchChannelNamesTask: ", err)
+	}
+
+	/**
+	 * 	S3 BACKUP (0 0 * * *)
+	 */
+	task, err = taskScheduler.ScheduleWithCron(func(ctx context.Context) {
+		var wg sync.WaitGroup
+		wg.Add(1)
+		go tasks.S3BackupTask(ctx, &wg)
+		wg.Wait()
+	}, constants.S3BackupCronExpression)
+	processS3BackupTask = &task
+
+	if err == nil {
+		log.Print("S3BackupTask has been scheduled successfully.  Cron: ", constants.S3BackupCronExpression)
+	} else {
+		log.Println("Error scheduling task S3BackupTask: ", err)
 	}
 
 }
