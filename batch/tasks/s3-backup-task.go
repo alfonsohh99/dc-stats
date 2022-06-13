@@ -55,7 +55,7 @@ func S3BackupTask(ctx context.Context, wait *sync.WaitGroup) {
 		})
 
 		if err != nil {
-			log.Println("ERROR UPLOADING BACKUP, ", guildItem.GuildID)
+			log.Println("ERROR UPLOADING GUILD BACKUP, ", guildItem.GuildID, err)
 		}
 
 	}
