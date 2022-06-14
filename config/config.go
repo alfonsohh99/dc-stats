@@ -14,6 +14,7 @@ var (
 	DatabaseEndpoint string
 	DatabasePort     string
 	S3Bucket         string
+	AWSRegion        string
 
 	config *configStruct
 )
@@ -26,6 +27,7 @@ type configStruct struct {
 	DatabaseEndpoint string `json:"DatabaseEndpoint"`
 	DatabasePort     string `json:"DatabasePort"`
 	S3Bucket         string `json:"S3Bucket"`
+	AWSRegion        string `json:"AWSRegion"`
 }
 
 func ReadConfig() error {
@@ -51,6 +53,7 @@ func ReadConfig() error {
 	DatabaseEndpoint = config.DatabaseEndpoint
 	DatabasePort = config.DatabasePort
 	S3Bucket = config.S3Bucket
+	AWSRegion = config.AWSRegion
 
 	return nil
 
