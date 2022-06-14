@@ -18,8 +18,10 @@ The bot makes use of the [chrono](https://github.com/procyon-projects/chrono) li
 - Processing voice chat information so it does not have to be calculated for every command invocation
 - Gathering chat message information from every chat channel and storing it
 - Processing chat message informa so it does not have to be calculated for every command invocation
-- Off-site backups to AWS S3
+- Off-site backups to [AWS](https://github.com/aws/aws-sdk-go-v2) S3
 
 The bot also takes advantaje of goroutines for improved performance managing asynchronous tasks.
 
-All this data is stored using mongoDB
+All this data is stored using mongoDB.
+
+Everything can hosted locally on a raspberry-pi 3B
