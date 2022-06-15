@@ -15,6 +15,8 @@ var (
 	DatabasePort     string
 	S3Bucket         string
 	AWSRegion        string
+	AccessKeyID      string
+	SecretAccessKey  string
 
 	config *configStruct
 )
@@ -28,6 +30,8 @@ type configStruct struct {
 	DatabasePort     string `json:"DatabasePort"`
 	S3Bucket         string `json:"S3Bucket"`
 	AWSRegion        string `json:"AWSRegion"`
+	AccessKeyID      string `json:"AccessKeyID"`
+	SecretAccessKey  string `json:"SecretAccessKey"`
 }
 
 func ReadConfig() error {
@@ -54,6 +58,8 @@ func ReadConfig() error {
 	DatabasePort = config.DatabasePort
 	S3Bucket = config.S3Bucket
 	AWSRegion = config.AWSRegion
+	AccessKeyID = config.AccessKeyID
+	SecretAccessKey = config.SecretAccessKey
 
 	return nil
 

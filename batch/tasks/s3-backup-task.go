@@ -27,7 +27,14 @@ func S3BackupTask(ctx context.Context, wait *sync.WaitGroup) {
 		log.Println("ERROR FETCHING DATA GUILDS", err)
 	}
 
-	cfg, err := config.LoadDefaultConfig(ctx, config.WithRegion(botConfig.AWSRegion))
+	cfg, err := config.LoadDefaultConfig(ctx,
+		config.WithRegion(botConfig.AWSRegion),
+		config.WithCredentialsProvider(
+			aws.CredentialsProviderFunc(
+				func(ctx context.Context) (aws.Credentials, error) {
+					return aws.Credentials{AccessKeyID: botConfig.AccessKeyID, SecretAccessKey: botConfig.SecretAccessKey}, nil
+				})))
+
 	if err != nil {
 		log.Println("Error configurating AWS client: ", err)
 	}
