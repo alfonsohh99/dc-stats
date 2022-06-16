@@ -57,7 +57,7 @@ func S3BackupTask(ctx context.Context, wait *sync.WaitGroup) {
 
 		_, err = uploader.Upload(ctx, &s3.PutObjectInput{
 			Bucket: aws.String(botConfig.S3Bucket),
-			Key:    aws.String("backups/" + guildItem.GuildID + "/" + dateNow.Format("2006-01") + "/" + dateNow.Format("2006-01-06 15:04:05")),
+			Key:    aws.String("backups/" + guildItem.GuildID + "/" + dateNow.Format("2006-01") + "/" + dateNow.Format(time.RFC3339)),
 			Body:   strings.NewReader(string(guildString)),
 		})
 
