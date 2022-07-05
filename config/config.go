@@ -17,6 +17,9 @@ var (
 	AWSRegion        string
 	AccessKeyID      string
 	SecretAccessKey  string
+	ClientId         string
+	ClientSecret     string
+	OAuthRedirectURI string
 
 	config *configStruct
 )
@@ -32,6 +35,9 @@ type configStruct struct {
 	AWSRegion        string `json:"AWSRegion"`
 	AccessKeyID      string `json:"AccessKeyID"`
 	SecretAccessKey  string `json:"SecretAccessKey"`
+	ClientId         string `json:"ClientId"`
+	ClientSecret     string `json:"ClientSecret"`
+	OAuthRedirectURI string `json:"OAuthRedirectURI"`
 }
 
 func ReadConfig() error {
@@ -60,6 +66,9 @@ func ReadConfig() error {
 	AWSRegion = config.AWSRegion
 	AccessKeyID = config.AccessKeyID
 	SecretAccessKey = config.SecretAccessKey
+	ClientId = config.ClientId
+	ClientSecret = config.ClientSecret
+	OAuthRedirectURI = config.OAuthRedirectURI
 
 	return nil
 

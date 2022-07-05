@@ -2,6 +2,7 @@ package database
 
 import (
 	"context"
+	"dc-stats/api/api-model"
 	"dc-stats/config"
 	"dc-stats/model/data"
 	"dc-stats/model/processed"
@@ -16,6 +17,7 @@ import (
 var (
 	DataCollection      *mongo.Collection
 	ProcessedCollection *mongo.Collection
+	ApiUsersCollection  *mongo.Collection
 )
 
 func Start(ctx context.Context) {
@@ -36,6 +38,7 @@ func Start(ctx context.Context) {
 
 	DataCollection = client.Database("discord").Collection("vc")
 	ProcessedCollection = client.Database("discord").Collection("vc-processed")
+	ApiUsersCollection = client.Database("discord").Collection("api-users")
 }
 
 func FindOrCreateDataGuild(id string, ctx context.Context) (guild dataModel.Guild, err error) {
@@ -65,6 +68,19 @@ func FindDataGuild(ctx context.Context, guildId string) (dataModel.Guild, error)
 	var guildObject dataModel.Guild
 	filter := bson.D{primitive.E{Key: "guild_id", Value: guildId}}
 	findGuild := DataCollection.FindOne(ctx, filter)
+	if findGuild.Err() != nil {
+		//Guild doesnt have data yet
+		return guildObject, findGuild.Err()
+	}
+
+	findGuild.Decode(&guildObject)
+	return guildObject, nil
+}
+
+func FindProcessedGuild(ctx context.Context, guildId string) (processedModel.Guild, error) {
+	var guildObject processedModel.Guild
+	filter := bson.D{primitive.E{Key: "guild_id", Value: guildId}}
+	findGuild := ProcessedCollection.FindOne(ctx, filter)
 	if findGuild.Err() != nil {
 		//Guild doesnt have data yet
 		return guildObject, findGuild.Err()
@@ -155,4 +171,38 @@ func SaveOrUpdateProcessedGuildFromMessage(guildId string, scores []processedMod
 		})
 	}
 	return processedGuildObject, nil
+}
+
+func SaveOrUpdatApiUser(user apiModel.User, ctx context.Context) (apiModel.User, error) {
+
+	var foundUserApi apiModel.User
+
+	filter := bson.D{primitive.E{Key: "user_id", Value: user.UserId}}
+	findApiUser := ApiUsersCollection.FindOne(ctx, filter)
+	if findApiUser.Err() != nil {
+		//User Api doesnt exist
+		log.Println("API_USER NOT PRESSENT: ", findApiUser.Err().Error())
+		data, err := ApiUsersCollection.InsertOne(ctx, user)
+		if err != nil {
+			log.Println(err)
+			return user, err
+		}
+		log.Println("CREATED API_USER:  ", data)
+	} else {
+		findApiUser.Decode(&foundUserApi)
+		ApiUsersCollection.UpdateByID(ctx, foundUserApi.ID, user)
+	}
+	return user, nil
+}
+
+func FindApiUser(ctx context.Context, userId string) (apiModel.User, error) {
+	var apiUser apiModel.User
+	filter := bson.D{primitive.E{Key: "user_id", Value: userId}}
+	findApiUser := ApiUsersCollection.FindOne(ctx, filter)
+	if findApiUser.Err() != nil {
+		//User not found
+		return apiUser, findApiUser.Err()
+	}
+	findApiUser.Decode(&apiUser)
+	return apiUser, nil
 }

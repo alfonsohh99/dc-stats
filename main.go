@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"dc-stats/api"
 	"dc-stats/batch"
 	"dc-stats/bot"
 	"dc-stats/config"
@@ -25,6 +26,8 @@ func main() {
 	bot := bot.Start(ctx)
 
 	batch.Start(bot)
+
+	api.Start(ctx)
 
 	<-make(chan struct{})
 	return
