@@ -20,7 +20,7 @@ The bot makes use of the [chrono](https://github.com/procyon-projects/chrono) li
 - Processing chat message informa so it does not have to be calculated for every command invocation
 - Off-site backups to [AWS](https://github.com/aws/aws-sdk-go-v2) S3
 
-Users can access their guild's data through the [Echo API](https://github.com/labstack/echo) which could also be fetched from a front-end
+Users can access their guild's data through the [Iris API](https://github.com/kataras/iris) which could also be fetched from a front-end
 
 The bot also takes advantaje of goroutines for improved performance when managing asynchronous tasks.
 
