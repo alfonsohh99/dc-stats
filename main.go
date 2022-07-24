@@ -7,12 +7,15 @@ import (
 	"dc-stats/bot"
 	"dc-stats/config"
 	"dc-stats/database"
+	"dc-stats/logging"
 	"fmt"
 )
 
 var ctx = context.TODO()
 
 func main() {
+
+	logging.Start()
 
 	err := config.ReadConfig()
 
