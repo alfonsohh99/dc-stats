@@ -29,6 +29,4 @@ func main() {
 
 	api.Start(ctx)
 
-	<-make(chan struct{})
-	return
 }

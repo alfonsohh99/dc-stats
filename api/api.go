@@ -8,42 +8,63 @@ import (
 	"encoding/json"
 	"errors"
 	"io"
-	"log"
 	"net/http"
 	"net/url"
 	"strings"
+	"time"
 
 	"github.com/bwmarrin/discordgo"
-	"github.com/labstack/echo/v4"
+
+	"github.com/kataras/golog"
+	"github.com/kataras/iris/v12"
+
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
-var ctx context.Context
+var appCtx context.Context
+var apiLogger *golog.Logger
 
 func Start(appContext context.Context) {
 
-	ctx = appContext
+	appCtx = appContext
+	irisApp := iris.New()
+	irisApp.Logger().SetPrefix("[DC-STATS-API] ")
+	irisApp.Logger().SetTimeFormat(time.RFC3339)
+	apiLogger = irisApp.Logger()
 
-	e := echo.New()
+	// v1 path
+	{
+		// User Auth
+		appApi := irisApp.Party("/v1")
+		appApi.Get("/auth/:code", authentication)
 
-	e.GET("auth/:code", authentication)
+		//UserAPI
+		{
+			userApi := appApi.Party("/user")
 
-	e.GET("user", getUser)
+			userApi.Get("/guilds", getGuilds)
 
-	e.GET("user/guilds", getGuilds)
+			userApi.Get("/guilds/:guildId", getGuild)
 
-	e.GET("user/guilds/:guildId", getGuild)
+			userApi.Get("", getUser)
+		}
+	}
+	for _, route := range irisApp.GetRoutes() {
+		apiLogger.Info("Mapped Route: " + "[" + route.Method + "] " + route.Path)
+	}
 
-	e.Logger.Error(e.Start(":8080"))
+	apiLogger.Error(irisApp.Listen(":8080", iris.WithOptimizations))
 }
 
-func authentication(c echo.Context) error {
-	code := c.Param("code")
+func authentication(irisCtx iris.Context) {
+	code := irisCtx.Params().Get("code")
 
 	authentication, err := retrieveCredentialsFromCode(code)
 	if err != nil {
-		log.Println("Error retrieving token: ", err)
-		return c.String(http.StatusBadRequest, "Error retrieving token")
+		irisCtx.StatusCode(iris.StatusBadRequest)
+		irisCtx.JSON("Error retrieving token")
+		apiLogger.Error("Error retrieving token: ", err)
+		return
 	}
 
 	accessToken := authentication.AccessToken
@@ -51,8 +72,10 @@ func authentication(c echo.Context) error {
 	userInfo, err := getUserInfoFromAccessToken(accessToken)
 
 	if err != nil {
-		log.Println("Error retrieving user info: ", err)
-		return c.String(http.StatusBadRequest, "Error retrieving user info")
+		irisCtx.StatusCode(iris.StatusBadRequest)
+		irisCtx.JSON("Error retrieving user info")
+		apiLogger.Error("Error retrieving user info: ", err)
+		return
 	}
 
 	user := apiModel.User{
@@ -67,80 +90,77 @@ func authentication(c echo.Context) error {
 		Banner:        userInfo.Banner,
 		Locale:        userInfo.Locale,
 		MFAEnabled:    userInfo.MFAEnabled}
-	database.SaveOrUpdatApiUser(user, ctx)
+	database.SaveOrUpdatApiUser(user, appCtx)
 
-	response, err := json.Marshal(apiModel.UserAuth{
+	userAuth := apiModel.UserAuth{
 		UserId:       userInfo.ID,
 		AccessToken:  authentication.AccessToken,
 		RefreshToken: authentication.RefreshToken,
-		ExpiresIn:    authentication.ExpiresIn})
+		ExpiresIn:    authentication.ExpiresIn}
 
-	if err != nil {
-		log.Println("Error creating response:  ", err)
-		return c.String(http.StatusInternalServerError, "Error creating response")
-	}
-
-	return c.String(http.StatusOK, string(response))
+	irisCtx.StatusCode(iris.StatusOK)
+	irisCtx.JSON(userAuth)
 }
 
-func getUser(c echo.Context) error {
-	token := c.Request().Header.Get("Authorization")
+func getUser(irisCtx iris.Context) {
+	token := irisCtx.Request().Header.Get("Authorization")
 
 	userInfo, err := getUserInfoFromAccessToken(token)
 	if err != nil {
-		log.Println("Error retrieving user info: ", err)
-		return c.String(http.StatusBadRequest, "Error retrieving user info")
+		irisCtx.StatusCode(iris.StatusBadRequest)
+		irisCtx.JSON("Error retrieving user info")
+		apiLogger.Error("Error retrieving user info: ", err)
+		return
 	}
 
-	user, err := database.FindApiUser(ctx, userInfo.ID)
+	user, err := database.FindApiUser(appCtx, userInfo.ID)
 	if err != nil {
-		log.Println("User not found", err)
-		return c.String(http.StatusNotFound, "User not found")
+		irisCtx.StatusCode(iris.StatusNotFound)
+		irisCtx.JSON("User not found")
+		apiLogger.Error("User not found", err)
+		return
 	}
 
-	response, err := json.Marshal(user)
-	if err != nil {
-		log.Println("Error creating response:  ", err)
-		return c.String(http.StatusInternalServerError, "Error creating response")
-	}
-
-	return c.String(http.StatusOK, string(response))
+	irisCtx.StatusCode(iris.StatusOK)
+	irisCtx.JSON(user)
 }
 
-func getGuilds(c echo.Context) error {
-	afterId := c.QueryParam("afterId")
-	token := c.Request().Header.Get("Authorization")
+func getGuilds(irisCtx iris.Context) {
+	afterId := irisCtx.URLParam("afterId")
+	token := irisCtx.Request().Header.Get("Authorization")
 
 	client, err := discordgo.New("Bearer " + token)
 	if err != nil {
-		log.Println("Error creating discord client: ", err)
-		return c.String(http.StatusBadRequest, "Error creating discord client")
+		irisCtx.StatusCode(iris.StatusBadRequest)
+		irisCtx.JSON("Error creating discord client")
+		apiLogger.Error("Error creating discord client: ", err)
+		return
 	}
 
 	guilds, err := client.UserGuilds(100, "", afterId)
 
 	if err != nil {
-		log.Println("Error Fetching Guilds")
-		return c.String(http.StatusBadRequest, "Error Fetching Guilds")
+		irisCtx.StatusCode(iris.StatusBadRequest)
+		irisCtx.JSON("Error Fetching Guilds")
+		apiLogger.Error("Error Fetching Guilds: ", err)
+		return
 	}
 
-	response, err := json.Marshal(guilds)
-	if err != nil {
-		log.Println("Error creating response:  ", err)
-		return c.String(http.StatusInternalServerError, "Error creating response")
-	}
+	irisCtx.StatusCode(iris.StatusOK)
+	irisCtx.JSON(guilds)
 
-	return c.String(http.StatusOK, string(response))
 }
 
-func getGuild(c echo.Context) error {
-	guildId := c.Param("guildId")
-	token := c.Request().Header.Get("Authorization")
+func getGuild(irisCtx iris.Context) {
+	guildId := irisCtx.Params().Get("guildId")
+	token := irisCtx.Request().Header.Get("Authorization")
 
 	client, err := discordgo.New("Bearer " + token)
 	if err != nil {
-		log.Println("Error creating discord client: ", err)
-		return c.String(http.StatusBadRequest, "Error creating discord client")
+		irisCtx.StatusCode(iris.StatusBadRequest)
+		irisCtx.JSON("Error creating discord client")
+		apiLogger.Error("Error creating discord client: ", err)
+		return
 	}
 
 	guilds, err := client.UserGuilds(100, "", "")
@@ -154,24 +174,23 @@ func getGuild(c echo.Context) error {
 	}
 
 	if !isMember {
-		log.Println("User not cannot access guild: ", guildId)
-		return c.String(http.StatusBadRequest, "User not cannot access guild: "+guildId)
+		irisCtx.StatusCode(iris.StatusBadRequest)
+		irisCtx.JSON("User not cannot access guild: " + guildId)
+		apiLogger.Error("User not cannot access guild: ", guildId)
+		return
 	}
 
-	guild, err := database.FindProcessedGuild(ctx, guildId)
+	guild, err := database.FindProcessedGuild(appCtx, guildId)
 
 	if err != nil {
-		log.Println("Error Fetching Guild", err)
-		return c.String(http.StatusBadRequest, "Error Fetching Guild")
+		irisCtx.StatusCode(iris.StatusBadRequest)
+		irisCtx.JSON("Error Fetching Guildd")
+		apiLogger.Error("Error Fetching Guild", err)
+		return
 	}
 
-	response, err := json.Marshal(guild)
-	if err != nil {
-		log.Println("Error creating response:  ", err)
-		return c.String(http.StatusInternalServerError, "Error creating response")
-	}
-
-	return c.String(http.StatusOK, string(response))
+	irisCtx.StatusCode(iris.StatusOK)
+	irisCtx.JSON(guild)
 }
 
 // API UTILS
@@ -189,7 +208,7 @@ func retrieveCredentialsFromCode(code string) (apiModel.DiscordAuthResponse, err
 
 	req, err := http.NewRequest("POST", "https://discord.com/api/v10/oauth2/token", strings.NewReader(form.Encode()))
 	if err != nil {
-		log.Println("Error creating auth request: ", err)
+		apiLogger.Error("Error creating auth request: ", err)
 		return responseJson, err
 	}
 
@@ -199,14 +218,14 @@ func retrieveCredentialsFromCode(code string) (apiModel.DiscordAuthResponse, err
 	res, err := http.DefaultClient.Do(req)
 
 	if err != nil {
-		log.Println("Error making HTTP request: ", err)
+		apiLogger.Error("Error making HTTP request: ", err)
 		return responseJson, err
 	}
 
 	read, err := io.ReadAll(res.Body)
 
 	if err != nil {
-		log.Println("Error reading auth response body: ", err)
+		apiLogger.Error("Error reading auth response body: ", err)
 		return responseJson, err
 	}
 
@@ -217,7 +236,7 @@ func retrieveCredentialsFromCode(code string) (apiModel.DiscordAuthResponse, err
 	err = json.Unmarshal(read, &responseJson)
 
 	if err != nil {
-		log.Println("Error UnMarshalling response body", err)
+		apiLogger.Error("Error UnMarshalling response body", err)
 		return responseJson, err
 	}
 
