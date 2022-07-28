@@ -14,7 +14,6 @@ import (
 	"time"
 
 	"github.com/bwmarrin/discordgo"
-
 	"github.com/kataras/golog"
 	"github.com/kataras/iris/v12"
 
@@ -24,6 +23,14 @@ import (
 var appCtx context.Context
 var apiLogger *golog.Logger
 
+// @title       DC-STATS user API
+// @version     1.0
+// @description This api helps user see their data using discord code grant authentication
+
+// @license.name MIT License
+
+// @host     localhost:8080
+// @BasePath /v1
 func Start(appContext context.Context) {
 
 	appCtx = appContext
@@ -36,7 +43,7 @@ func Start(appContext context.Context) {
 	{
 		// User Auth
 		appApi := irisApp.Party("/v1")
-		appApi.Get("/auth/:code", authentication)
+		appApi.Post("/auth/:code", authentication)
 
 		//UserAPI
 		{
@@ -49,6 +56,7 @@ func Start(appContext context.Context) {
 			userApi.Get("", getUser)
 		}
 	}
+
 	for _, route := range irisApp.GetRoutes() {
 		apiLogger.Info("Mapped Route: " + "[" + route.Method + "] " + route.Path)
 	}
@@ -56,6 +64,14 @@ func Start(appContext context.Context) {
 	apiLogger.Error(irisApp.Listen(":8080", iris.WithOptimizations))
 }
 
+// @id      authUser
+// @Summary Authenticates a user by code grant
+// @Tags auth
+// @Accept  json
+// @Produce json
+// @Success 200 {object} apiModel.UserAuth
+// @Failure 400 {object} string
+// @Router  /auth/:code [post]
 func authentication(irisCtx iris.Context) {
 	code := irisCtx.Params().Get("code")
 
@@ -102,6 +118,14 @@ func authentication(irisCtx iris.Context) {
 	irisCtx.JSON(userAuth)
 }
 
+// @id      getUser
+// @Summary Gets a user given its authentication token
+// @Tags user
+// @Accept  json
+// @Produce json
+// @Success 200 {object} apiModel.User
+// @Failure 400 {object} string
+// @Router  /user [get]
 func getUser(irisCtx iris.Context) {
 	token := irisCtx.Request().Header.Get("Authorization")
 
@@ -125,6 +149,14 @@ func getUser(irisCtx iris.Context) {
 	irisCtx.JSON(user)
 }
 
+// @id      getGuilds
+// @Summary Gets a user's guilds given its authentication token
+// @Tags  guild
+// @Accept  json
+// @Produce json
+// @Success 200 {array}  discordgo.UserGuild
+// @Failure 400 {object} string
+// @Router  /user/guilds [get]
 func getGuilds(irisCtx iris.Context) {
 	afterId := irisCtx.URLParam("afterId")
 	token := irisCtx.Request().Header.Get("Authorization")
@@ -151,6 +183,14 @@ func getGuilds(irisCtx iris.Context) {
 
 }
 
+// @id      getGuild
+// @Summary Gets a guild only if the user is inside it and we have a record of it
+// @Tags guild
+// @Accept  json
+// @Produce json
+// @Success 200 {object} processedModel.Guild
+// @Failure 400 {object} string
+// @Router  /user/guilds/:guildId [get]
 func getGuild(irisCtx iris.Context) {
 	guildId := irisCtx.Params().Get("guildId")
 	token := irisCtx.Request().Header.Get("Authorization")
