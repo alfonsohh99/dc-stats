@@ -1,0 +1,213 @@
+definitions:
+  apiModel.User:
+    properties:
+      _id:
+        type: string
+      accent_color:
+        type: integer
+      avatar:
+        type: string
+      banner:
+        type: string
+      discriminator:
+        type: string
+      locale:
+        type: string
+      mfa_enabled:
+        type: boolean
+      premium_type:
+        type: integer
+      user_id:
+        type: string
+      user_name:
+        type: string
+      verified:
+        type: boolean
+    type: object
+  apiModel.UserAuth:
+    properties:
+      access_token:
+        type: string
+      expires_in:
+        type: integer
+      refresh_token:
+        type: string
+      user_id:
+        type: string
+    type: object
+  discordgo.UserGuild:
+    properties:
+      icon:
+        type: string
+      id:
+        type: string
+      name:
+        type: string
+      owner:
+        type: boolean
+      permissions:
+        example: "0"
+        type: string
+    type: object
+  processedModel.ChannelData:
+    properties:
+      channelName:
+        type: string
+      score:
+        type: integer
+    type: object
+  processedModel.Guild:
+    properties:
+      guildID:
+        type: string
+      id:
+        type: string
+      topMessageUsers:
+        items:
+          $ref: '#/definitions/processedModel.UserScore'
+        type: array
+      topUsers:
+        items:
+          $ref: '#/definitions/processedModel.UserScore'
+        type: array
+      userData:
+        additionalProperties:
+          $ref: '#/definitions/processedModel.User'
+        type: object
+      userMessageData:
+        additionalProperties:
+          $ref: '#/definitions/processedModel.User'
+        type: object
+    type: object
+  processedModel.User:
+    properties:
+      channelData:
+        items:
+          $ref: '#/definitions/processedModel.ChannelData'
+        type: array
+      score:
+        type: integer
+    type: object
+  processedModel.UserScore:
+    properties:
+      score:
+        type: integer
+      username:
+        type: string
+    type: object
+info:
+  contact: {}
+paths:
+  /auth/:code:
+    post:
+      consumes:
+      - application/json
+      operationId: authUser
+      parameters:
+      - description: Discord code grant
+        in: path
+        name: code
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/apiModel.UserAuth'
+        "400":
+          description: Bad Request
+          schema:
+            type: string
+      summary: Authenticates a user by code grant
+      tags:
+      - authenticationService
+  /user:
+    get:
+      consumes:
+      - application/json
+      operationId: getUser
+      parameters:
+      - description: Discord code grant
+        in: path
+        name: code
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/apiModel.User'
+        "400":
+          description: Bad Request
+          schema:
+            type: string
+      summary: Gets a user given its authentication token
+      tags:
+      - userService
+  /user/guilds:
+    get:
+      consumes:
+      - application/json
+      operationId: getGuilds
+      parameters:
+      - description: Discord authentication token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: Get guilds after this id
+        in: query
+        name: afterId
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/discordgo.UserGuild'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            type: string
+      summary: Gets a user's guilds given its authentication token
+      tags:
+      - guildService
+  /user/guilds/:guildId:
+    get:
+      consumes:
+      - application/json
+      operationId: getGuild
+      parameters:
+      - description: Discord authentication token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: Guild id
+        in: path
+        name: guildId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/processedModel.Guild'
+        "400":
+          description: Bad Request
+          schema:
+            type: string
+      summary: Gets a guild only if the user is inside it and we have a record of
+        it
+      tags:
+      - guildService
+swagger: "2.0"
