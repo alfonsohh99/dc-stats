@@ -1,8 +1,16 @@
 {
     "swagger": "2.0",
     "info": {
-        "contact": {}
+        "description": "This api helps user see their data using discord code grant authentication",
+        "title": "DC-STATS user API",
+        "contact": {},
+        "license": {
+            "name": "MIT License"
+        },
+        "version": "1.0"
     },
+    "host": "localhost:8080",
+    "basePath": "/v1",
     "paths": {
         "/auth/:code": {
             "post": {

@@ -11,6 +11,9 @@ const docTemplate = `{
         "description": "{{escape .Description}}",
         "title": "{{.Title}}",
         "contact": {},
+        "license": {
+            "name": "MIT License"
+        },
         "version": "{{.Version}}"
     },
     "host": "{{.Host}}",
@@ -338,12 +341,12 @@ const docTemplate = `{
 
 // SwaggerInfo holds exported Swagger Info so clients can modify it
 var SwaggerInfo = &swag.Spec{
-	Version:          "",
-	Host:             "",
-	BasePath:         "",
+	Version:          "1.0",
+	Host:             "localhost:8080",
+	BasePath:         "/v1",
 	Schemes:          []string{},
-	Title:            "",
-	Description:      "",
+	Title:            "DC-STATS user API",
+	Description:      "This api helps user see their data using discord code grant authentication",
 	InfoInstanceName: "swagger",
 	SwaggerTemplate:  docTemplate,
 }
