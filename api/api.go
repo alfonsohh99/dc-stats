@@ -71,7 +71,7 @@ func Start(appContext context.Context) {
 // @Produce json
 // @Param   code path     string true "Discord code grant"
 // @Success 200  {object} apiModel.UserAuth
-// @Failure 400  {object} string
+// @Failure 400  {string} string
 // @Router  /auth/:code [post]
 func authentication(irisCtx iris.Context) {
 	code := irisCtx.Params().Get("code")
@@ -126,7 +126,7 @@ func authentication(irisCtx iris.Context) {
 // @Produce json
 // @Param   code path     string true "Discord code grant"
 // @Success 200  {object} apiModel.User
-// @Failure 400  {object} string
+// @Failure 400  {string} string
 // @Router  /user [get]
 func getUser(irisCtx iris.Context) {
 	token := irisCtx.Request().Header.Get("Authorization")
@@ -159,7 +159,7 @@ func getUser(irisCtx iris.Context) {
 // @Param   Authorization header   string true  "Discord authentication token"
 // @Param   afterId       query    string false "Get guilds after this id"
 // @Success 200           {array}  discordgo.UserGuild
-// @Failure 400           {object} string
+// @Failure 400           {string} string
 // @Router  /user/guilds [get]
 func getGuilds(irisCtx iris.Context) {
 	afterId := irisCtx.URLParam("afterId")
@@ -195,32 +195,24 @@ func getGuilds(irisCtx iris.Context) {
 // @Param   Authorization header   string true "Discord authentication token"
 // @Param   guildId       path     string true "Guild id"
 // @Success 200           {object} processedModel.Guild
-// @Failure 400           {object} string
+// @Failure 400           {string} string
+// @Failure 404           {string} string
+// @Failure 403           {string} string
 // @Router  /user/guilds/:guildId [get]
 func getGuild(irisCtx iris.Context) {
 	guildId := irisCtx.Params().Get("guildId")
 	token := irisCtx.Request().Header.Get("Authorization")
 
-	client, err := discordgo.New("Bearer " + token)
+	isMember, err := isUserInGuild(guildId, token)
+
 	if err != nil {
 		irisCtx.StatusCode(iris.StatusBadRequest)
-		irisCtx.JSON("Error creating discord client")
-		apiLogger.Error("Error creating discord client: ", err)
-		return
-	}
-
-	guilds, err := client.UserGuilds(100, "", "")
-
-	var isMember = false
-	for _, guild := range guilds {
-		if guild.ID == guildId {
-			isMember = true
-			break
-		}
+		irisCtx.JSON(err.Error())
+		apiLogger.Error(err)
 	}
 
 	if !isMember {
-		irisCtx.StatusCode(iris.StatusBadRequest)
+		irisCtx.StatusCode(iris.StatusForbidden)
 		irisCtx.JSON("User not cannot access guild: " + guildId)
 		apiLogger.Error("User not cannot access guild: ", guildId)
 		return
@@ -229,9 +221,9 @@ func getGuild(irisCtx iris.Context) {
 	guild, err := database.FindProcessedGuild(appCtx, guildId)
 
 	if err != nil {
-		irisCtx.StatusCode(iris.StatusBadRequest)
-		irisCtx.JSON("Error Fetching Guildd")
-		apiLogger.Error("Error Fetching Guild", err)
+		irisCtx.StatusCode(iris.StatusNotFound)
+		irisCtx.JSON("Guild not found")
+		apiLogger.Error("Guild not found", err)
 		return
 	}
 
@@ -302,4 +294,29 @@ func getUserInfoFromAccessToken(token string) (*discordgo.User, error) {
 		return user, err
 	}
 	return user, nil
+}
+
+func isUserInGuild(guildId string, token string) (bool, error) {
+
+	client, err := discordgo.New("Bearer " + token)
+	if err != nil {
+
+		return false, errors.New("Error creating discord client")
+	}
+	afterId := ""
+	guilds, err := client.UserGuilds(100, "", afterId)
+	var isMember = false
+
+	for len(guilds) > 0 && err == nil {
+
+		for _, guild := range guilds {
+			if guild.ID == guildId {
+				isMember = true
+				break
+			}
+		}
+		afterId = guilds[len(guilds)-1].ID
+		guilds, err = client.UserGuilds(100, "", afterId)
+	}
+	return isMember, nil
 }
