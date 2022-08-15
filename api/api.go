@@ -14,7 +14,6 @@ import (
 	"time"
 
 	"github.com/bwmarrin/discordgo"
-	"github.com/iris-contrib/middleware/cors"
 	"github.com/kataras/golog"
 	"github.com/kataras/iris/v12"
 
