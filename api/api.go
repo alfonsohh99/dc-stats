@@ -18,6 +18,7 @@ import (
 	"github.com/kataras/golog"
 	"github.com/kataras/iris/v12"
 
+	"github.com/iris-contrib/middleware/cors"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
@@ -27,9 +28,7 @@ var apiLogger *golog.Logger
 // @title       DC-STATS user API
 // @version     1.0
 // @description This api helps user see their data using discord code grant authentication
-
 // @license.name MIT License
-
 // @host     localhost:8080
 // @BasePath /v1
 func Start(appContext context.Context) {

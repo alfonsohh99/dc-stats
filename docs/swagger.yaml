@@ -1,3 +1,4 @@
+basePath: /v1
 definitions:
   apiModel.User:
     properties:
@@ -94,8 +95,14 @@ definitions:
       username:
         type: string
     type: object
+host: localhost:8080
 info:
   contact: {}
+  description: This api helps user see their data using discord code grant authentication
+  license:
+    name: MIT License
+  title: DC-STATS user API
+  version: "1.0"
 paths:
   /auth/{code}:
     post:
