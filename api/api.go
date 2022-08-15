@@ -25,7 +25,7 @@ var appCtx context.Context
 var apiLogger *golog.Logger
 
 // @title       DC-STATS user API
-// @version     0.3
+// @version     0.0.3
 // @description This api helps user see their data using discord code grant authentication
 // @license.name MIT License
 // @host     server.dc-stats.com
