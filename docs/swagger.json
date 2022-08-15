@@ -7,9 +7,9 @@
         "license": {
             "name": "MIT License"
         },
-        "version": "1.0"
+        "version": "0.3"
     },
-    "host": "localhost:8080",
+    "host": "server.dc-stats.com",
     "basePath": "/v1",
     "paths": {
         "/auth/{code}": {
@@ -258,7 +258,7 @@
                 "id": {
                     "type": "string"
                 },
-                "isBotPresent": {
+                "is_bot_present": {
                     "type": "boolean"
                 },
                 "name": {
@@ -272,7 +272,7 @@
         "processedModel.ChannelData": {
             "type": "object",
             "properties": {
-                "channelName": {
+                "channel_name": {
                     "type": "string"
                 },
                 "score": {
@@ -283,31 +283,31 @@
         "processedModel.Guild": {
             "type": "object",
             "properties": {
-                "guildID": {
+                "_id": {
                     "type": "string"
                 },
-                "id": {
+                "guild_id": {
                     "type": "string"
                 },
-                "topMessageUsers": {
+                "top_message_users": {
                     "type": "array",
                     "items": {
                         "$ref": "#/definitions/processedModel.UserScore"
                     }
                 },
-                "topUsers": {
+                "top_users": {
                     "type": "array",
                     "items": {
                         "$ref": "#/definitions/processedModel.UserScore"
                     }
                 },
-                "userData": {
+                "user_data": {
                     "type": "object",
                     "additionalProperties": {
                         "$ref": "#/definitions/processedModel.User"
                     }
                 },
-                "userMessageData": {
+                "user_message_data": {
                     "type": "object",
                     "additionalProperties": {
                         "$ref": "#/definitions/processedModel.User"
@@ -318,7 +318,7 @@
         "processedModel.User": {
             "type": "object",
             "properties": {
-                "channelData": {
+                "channel_data": {
                     "type": "array",
                     "items": {
                         "$ref": "#/definitions/processedModel.ChannelData"
@@ -335,7 +335,7 @@
                 "score": {
                     "type": "integer"
                 },
-                "username": {
+                "user_name": {
                     "type": "string"
                 }
             }

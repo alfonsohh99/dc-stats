@@ -25,10 +25,10 @@ var appCtx context.Context
 var apiLogger *golog.Logger
 
 // @title       DC-STATS user API
-// @version     1.0
+// @version     0.3
 // @description This api helps user see their data using discord code grant authentication
 // @license.name MIT License
-// @host     localhost:8080
+// @host     server.dc-stats.com
 // @BasePath /v1
 func Start(appContext context.Context) {
 

@@ -265,7 +265,7 @@ const docTemplate = `{
                 "id": {
                     "type": "string"
                 },
-                "isBotPresent": {
+                "is_bot_present": {
                     "type": "boolean"
                 },
                 "name": {
@@ -279,7 +279,7 @@ const docTemplate = `{
         "processedModel.ChannelData": {
             "type": "object",
             "properties": {
-                "channelName": {
+                "channel_name": {
                     "type": "string"
                 },
                 "score": {
@@ -290,31 +290,31 @@ const docTemplate = `{
         "processedModel.Guild": {
             "type": "object",
             "properties": {
-                "guildID": {
+                "_id": {
                     "type": "string"
                 },
-                "id": {
+                "guild_id": {
                     "type": "string"
                 },
-                "topMessageUsers": {
+                "top_message_users": {
                     "type": "array",
                     "items": {
                         "$ref": "#/definitions/processedModel.UserScore"
                     }
                 },
-                "topUsers": {
+                "top_users": {
                     "type": "array",
                     "items": {
                         "$ref": "#/definitions/processedModel.UserScore"
                     }
                 },
-                "userData": {
+                "user_data": {
                     "type": "object",
                     "additionalProperties": {
                         "$ref": "#/definitions/processedModel.User"
                     }
                 },
-                "userMessageData": {
+                "user_message_data": {
                     "type": "object",
                     "additionalProperties": {
                         "$ref": "#/definitions/processedModel.User"
@@ -325,7 +325,7 @@ const docTemplate = `{
         "processedModel.User": {
             "type": "object",
             "properties": {
-                "channelData": {
+                "channel_data": {
                     "type": "array",
                     "items": {
                         "$ref": "#/definitions/processedModel.ChannelData"
@@ -342,7 +342,7 @@ const docTemplate = `{
                 "score": {
                     "type": "integer"
                 },
-                "username": {
+                "user_name": {
                     "type": "string"
                 }
             }
@@ -352,8 +352,8 @@ const docTemplate = `{
 
 // SwaggerInfo holds exported Swagger Info so clients can modify it
 var SwaggerInfo = &swag.Spec{
-	Version:          "1.0",
-	Host:             "localhost:8080",
+	Version:          "0.3",
+	Host:             "server.dc-stats.com",
 	BasePath:         "/v1",
 	Schemes:          []string{},
 	Title:            "DC-STATS user API",

@@ -24,7 +24,7 @@ type UserGuildInfo struct {
 	Name         string `json:"name"`
 	Icon         string `json:"icon"`
 	Owner        bool   `json:"owner"`
-	IsBotPresent bool   `json:"isBotPresent"`
+	IsBotPresent bool   `json:"is_bot_present"`
 }
 
 type User struct {

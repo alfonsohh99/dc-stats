@@ -42,7 +42,7 @@ definitions:
         type: string
       id:
         type: string
-      isBotPresent:
+      is_bot_present:
         type: boolean
       name:
         type: string
@@ -51,37 +51,37 @@ definitions:
     type: object
   processedModel.ChannelData:
     properties:
-      channelName:
+      channel_name:
         type: string
       score:
         type: integer
     type: object
   processedModel.Guild:
     properties:
-      guildID:
+      _id:
         type: string
-      id:
+      guild_id:
         type: string
-      topMessageUsers:
+      top_message_users:
         items:
           $ref: '#/definitions/processedModel.UserScore'
         type: array
-      topUsers:
+      top_users:
         items:
           $ref: '#/definitions/processedModel.UserScore'
         type: array
-      userData:
+      user_data:
         additionalProperties:
           $ref: '#/definitions/processedModel.User'
         type: object
-      userMessageData:
+      user_message_data:
         additionalProperties:
           $ref: '#/definitions/processedModel.User'
         type: object
     type: object
   processedModel.User:
     properties:
-      channelData:
+      channel_data:
         items:
           $ref: '#/definitions/processedModel.ChannelData'
         type: array
@@ -92,17 +92,17 @@ definitions:
     properties:
       score:
         type: integer
-      username:
+      user_name:
         type: string
     type: object
-host: localhost:8080
+host: server.dc-stats.com
 info:
   contact: {}
   description: This api helps user see their data using discord code grant authentication
   license:
     name: MIT License
   title: DC-STATS user API
-  version: "1.0"
+  version: "0.3"
 paths:
   /auth/{code}:
     post:
