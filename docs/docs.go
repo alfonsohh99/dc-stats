@@ -16,7 +16,7 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
-        "/auth/:code": {
+        "/auth/{code}": {
             "post": {
                 "consumes": [
                     "application/json"
@@ -25,7 +25,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "authenticationService"
+                    "authentication"
                 ],
                 "summary": "Authenticates a user by code grant",
                 "operationId": "authUser",
@@ -63,16 +63,16 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "userService"
+                    "user"
                 ],
                 "summary": "Gets a user given its authentication token",
                 "operationId": "getUser",
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "Discord code grant",
-                        "name": "code",
-                        "in": "path",
+                        "description": "Discord authentication token",
+                        "name": "Authorization",
+                        "in": "header",
                         "required": true
                     }
                 ],
@@ -101,7 +101,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "guildService"
+                    "guild"
                 ],
                 "summary": "Gets a user's guilds given its authentication token",
                 "operationId": "getGuilds",
@@ -126,7 +126,7 @@ const docTemplate = `{
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/discordgo.UserGuild"
+                                "$ref": "#/definitions/apiModel.UserGuildInfo"
                             }
                         }
                     },
@@ -139,7 +139,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/user/guilds/:guildId": {
+        "/user/guilds/{guildId}": {
             "get": {
                 "consumes": [
                     "application/json"
@@ -148,7 +148,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "guildService"
+                    "guild"
                 ],
                 "summary": "Gets a guild only if the user is inside it and we have a record of it",
                 "operationId": "getGuild",
@@ -177,6 +177,18 @@ const docTemplate = `{
                     },
                     "400": {
                         "description": "Bad Request",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
                         "schema": {
                             "type": "string"
                         }
@@ -241,7 +253,7 @@ const docTemplate = `{
                 }
             }
         },
-        "discordgo.UserGuild": {
+        "apiModel.UserGuildInfo": {
             "type": "object",
             "properties": {
                 "icon": {
@@ -250,15 +262,14 @@ const docTemplate = `{
                 "id": {
                     "type": "string"
                 },
+                "isBotPresent": {
+                    "type": "boolean"
+                },
                 "name": {
                     "type": "string"
                 },
                 "owner": {
                     "type": "boolean"
-                },
-                "permissions": {
-                    "type": "string",
-                    "example": "0"
                 }
             }
         },

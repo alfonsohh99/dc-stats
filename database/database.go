@@ -49,7 +49,7 @@ func FindOrCreateDataGuild(id string, ctx context.Context) (guild dataModel.Guil
 	findGuild := DataCollection.FindOne(ctx, filter)
 	if findGuild.Err() != nil {
 		//Guild doesnt exist
-		log.Println("GUILD NOT PRESSENT", findGuild.Err().Error())
+		log.Println("GUILD NOT PRESENT", findGuild.Err().Error())
 		newGuild := dataModel.CreateGuild(id)
 		data, err := DataCollection.InsertOne(ctx, newGuild)
 		if err != nil {
@@ -123,7 +123,7 @@ func SaveOrUpdateProcessedGuildFromVoice(guildId string, scores []processedModel
 	findProcessedGuild := ProcessedCollection.FindOne(ctx, filter)
 	if findProcessedGuild.Err() != nil {
 		//Guild doesnt exist
-		log.Println("PROCESSED GUILD NOT PRESSENT", findProcessedGuild.Err().Error())
+		log.Println("PROCESSED GUILD NOT PRESENT", findProcessedGuild.Err().Error())
 		newGuild := processedModel.CreateGuild(guildId)
 		newGuild.TopUsers = scores
 		newGuild.UserData = userData
@@ -152,7 +152,7 @@ func SaveOrUpdateProcessedGuildFromMessage(guildId string, scores []processedMod
 	findProcessedGuild := ProcessedCollection.FindOne(ctx, filter)
 	if findProcessedGuild.Err() != nil {
 		//Guild doesnt exist
-		log.Println("PROCESSED GUILD NOT PRESSENT", findProcessedGuild.Err().Error())
+		log.Println("PROCESSED GUILD NOT PRESENT", findProcessedGuild.Err().Error())
 		newGuild := processedModel.CreateGuild(guildId)
 		newGuild.TopMessageUsers = scores
 		newGuild.UserMessageData = userData
@@ -181,7 +181,7 @@ func SaveOrUpdatApiUser(user apiModel.User, ctx context.Context) (apiModel.User,
 	findApiUser := ApiUsersCollection.FindOne(ctx, filter)
 	if findApiUser.Err() != nil {
 		//User Api doesnt exist
-		log.Println("API_USER NOT PRESSENT: ", findApiUser.Err().Error())
+		log.Println("API_USER NOT PRESENT: ", findApiUser.Err().Error())
 		data, err := ApiUsersCollection.InsertOne(ctx, user)
 		if err != nil {
 			log.Println(err)

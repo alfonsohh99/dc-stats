@@ -35,19 +35,18 @@ definitions:
       user_id:
         type: string
     type: object
-  discordgo.UserGuild:
+  apiModel.UserGuildInfo:
     properties:
       icon:
         type: string
       id:
         type: string
+      isBotPresent:
+        type: boolean
       name:
         type: string
       owner:
         type: boolean
-      permissions:
-        example: "0"
-        type: string
     type: object
   processedModel.ChannelData:
     properties:
@@ -98,7 +97,7 @@ definitions:
 info:
   contact: {}
 paths:
-  /auth/:code:
+  /auth/{code}:
     post:
       consumes:
       - application/json
@@ -122,16 +121,16 @@ paths:
             type: string
       summary: Authenticates a user by code grant
       tags:
-      - authenticationService
+      - authentication
   /user:
     get:
       consumes:
       - application/json
       operationId: getUser
       parameters:
-      - description: Discord code grant
-        in: path
-        name: code
+      - description: Discord authentication token
+        in: header
+        name: Authorization
         required: true
         type: string
       produces:
@@ -147,7 +146,7 @@ paths:
             type: string
       summary: Gets a user given its authentication token
       tags:
-      - userService
+      - user
   /user/guilds:
     get:
       consumes:
@@ -170,7 +169,7 @@ paths:
           description: OK
           schema:
             items:
-              $ref: '#/definitions/discordgo.UserGuild'
+              $ref: '#/definitions/apiModel.UserGuildInfo'
             type: array
         "400":
           description: Bad Request
@@ -178,8 +177,8 @@ paths:
             type: string
       summary: Gets a user's guilds given its authentication token
       tags:
-      - guildService
-  /user/guilds/:guildId:
+      - guild
+  /user/guilds/{guildId}:
     get:
       consumes:
       - application/json
@@ -206,8 +205,16 @@ paths:
           description: Bad Request
           schema:
             type: string
+        "403":
+          description: Forbidden
+          schema:
+            type: string
+        "404":
+          description: Not Found
+          schema:
+            type: string
       summary: Gets a guild only if the user is inside it and we have a record of
         it
       tags:
-      - guildService
+      - guild
 swagger: "2.0"

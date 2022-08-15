@@ -19,6 +19,14 @@ type UserAuth struct {
 	ExpiresIn    int    `json:"expires_in"`
 }
 
+type UserGuildInfo struct {
+	ID           string `json:"id"`
+	Name         string `json:"name"`
+	Icon         string `json:"icon"`
+	Owner        bool   `json:"owner"`
+	IsBotPresent bool   `json:"isBotPresent"`
+}
+
 type User struct {
 	ID            primitive.ObjectID `json:"_id" bson:"_id"`
 	UserId        string             `json:"user_id" bson:"user_id"`
